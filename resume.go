@@ -1,3 +1,5 @@
+// +build js
+
 package main
 
 import (
@@ -7,10 +9,9 @@ import (
 	"honnef.co/go/js/dom"
 )
 
-var document dom.HTMLDocument
+var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
 func main() {
-	document = dom.GetWindow().Document().(dom.HTMLDocument)
 	document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
 		go setup()
 	})
