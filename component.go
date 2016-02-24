@@ -31,27 +31,34 @@ func (l Link) Render() ([]*html.Node, error) {
 }
 
 func join(a ...interface{}) Component {
-	var nodes []*html.Node
+	var list List
 	for _, v := range a {
 		switch v := v.(type) {
 		case Component:
-			n, err := v.Render()
-			if err != nil {
-				return composite{err: err}
-			}
-			nodes = append(nodes, n...)
+			list = append(list, v)
 		case string:
-			nodes = append(nodes, htmlg.Text(v))
+			list = append(list, Text(v))
 		default:
-			return composite{err: fmt.Errorf("unsupported type: %T", v)}
+			return Error{fmt.Errorf("join: unsupported type: %T", v)}
 		}
 	}
-	return composite{nodes: nodes}
+	return list
 }
 
-type composite struct {
-	nodes []*html.Node
-	err   error
+type List []Component
+
+func (l List) Render() ([]*html.Node, error) {
+	var nodes []*html.Node
+	for _, c := range l {
+		n, err := c.Render()
+		if err != nil {
+			return nil, err
+		}
+		nodes = append(nodes, n...)
+	}
+	return nodes, nil
 }
 
-func (c composite) Render() ([]*html.Node, error) { return c.nodes, c.err }
+type Error struct{ err error }
+
+func (e Error) Render() ([]*html.Node, error) { return nil, e.err }
