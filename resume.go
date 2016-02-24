@@ -84,7 +84,7 @@ var experience = Section{
 			},
 			Lines: []Component{
 				Text("Researched and implemented experimental software development tools."),
-				join("Created Conception, a 1st place winning project of ", Link{"LIVE 2013 Programming Contest", "http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/"}, "."),
+				join("Created Conception, a 1st place winning project of ", Link{"LIVE 2013 Programming Contest", template.URL("http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/")}, "."),
 			},
 		},
 		{
@@ -132,7 +132,7 @@ var projects = Section{
 				Text("Primary creator of a large open­source systems project; implemented in C++ and Go, solved low­level systems challenges to achieve desired behavior."),
 				Text("Routinely implemented and iterated upon experimental and novel interface ideas, interaction techniques and design prototypes, some showed great promise."),
 				Text("Discovered new techniques that allow for further reduction of information duplication than existing representations."),
-				join("1st place winning project of ", Link{"LIVE 2013 Programming Contest", "http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/"}, "."),
+				join("1st place winning project of ", Link{"LIVE 2013 Programming Contest", template.URL("http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/")}, "."),
 			},
 		},
 		{
