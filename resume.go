@@ -19,11 +19,16 @@ func main() {
 
 func setup() {
 	var buf bytes.Buffer
-	err := t().ExecuteTemplate(&buf, "body", sourcegraph)
+	err := t().ExecuteTemplate(&buf, "body", experience)
 	if err != nil {
 		panic(err)
 	}
 	document.Body().SetInnerHTML(buf.String())
+}
+
+type Section struct {
+	Title string
+	Items []Item
 }
 
 type Item struct {
@@ -33,28 +38,90 @@ type Item struct {
 	Lines       []string
 }
 
-var sourcegraph = Item{
-	JobTitle:    "Senior Software Engineer, Full Stack",
-	CompanyName: "Sourcegraph",
-	Dates: DateRange{
-		From: Date{Year: 2015, Month: 4},
-		To:   Present,
-	},
-	Lines: []string{
-		"Implemented significant non­trivial pieces of core Sourcegraph functionality in Go, including backend language analysis enhancements, and frontend components and visualizations.",
-		"Showed initiative by taking on refactors that led to significant performance improvements.",
-		"Made numerous contributions to open source Go libraries created or used by Sourcegraph.",
-		"Shared knowledge and best practices with new teammates to enable high quality contributions.",
+var experience = Section{
+	Title: "Experience",
+
+	Items: []Item{
+		{
+			JobTitle:    "Senior Software Engineer, Full Stack",
+			CompanyName: "Sourcegraph",
+			Dates: DateRange{
+				From: Date{Year: 2015, Month: 4}, To: Present,
+			},
+			Lines: []string{
+				"Implemented significant non­trivial pieces of core Sourcegraph functionality in Go, including backend language analysis enhancements, and frontend components and visualizations.",
+				"Showed initiative by taking on refactors that led to significant performance improvements.",
+				"Made numerous contributions to open source Go libraries created or used by Sourcegraph.",
+				"Shared knowledge and best practices with new teammates to enable high quality contributions.",
+			},
+		},
+		{
+			JobTitle:    "Senior Software Engineer, Backend",
+			CompanyName: "Triggit",
+			Dates: DateRange{
+				From: Date{Year: 2013, Month: 6}, To: Date{Year: 2015, Month: 3},
+			},
+			Lines: []string{
+				"Built distributed low­latency web services and required components for processing hundreds of thousands of ad auction requests per second.",
+				"Automated, improved practices for reproducible builds, continuous testing of complex projects.",
+				"Improved performance and functionality of an ad­serving and bidding platform.",
+				"Created detailed dashboards for monitoring and visualizing logs, statistics, controlling configuration and other relevant metrics.",
+			},
+		},
+		{
+			JobTitle: "Toolmaker",
+			Dates: DateRange{
+				From: Date{Year: 2012}, To: Date{Year: 2013, Month: 6},
+			},
+			Lines: []string{
+				"Researched and implemented experimental software development tools.",
+				// TODO: Link.
+				`Created Conception, a 1st place winning project of <a href="http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/" target="_blank">LIVE 2013 Programming Contest</a>.`,
+			},
+		},
+		{
+			JobTitle:    "Junior Application Programmer",
+			CompanyName: "CYSSC/MCYS, Ontario Public Service",
+			Dates: DateRange{
+				From: Date{Year: 2007, Month: 9}, To: Date{Year: 2008, Month: 8},
+			},
+			Lines: []string{
+				"Designed, created and maintained a complex Java GUI application to aid the development and maintenance of large database applications.",
+				"Wrote PL/SQL procedures to easily enable/disable logging on Oracle DB server on the fly.",
+				"Researched the best approach for new Monitoring Report development; implemented it.",
+			},
+		},
+		{
+			JobTitle:    "Game Engine Engineer, Tools",
+			CompanyName: "Reverie World Studios",
+			Dates: DateRange{
+				// TODO: Think about the title thing, do it?
+				//       title="8 months"
+				From: Date{Year: 2007, Month: 1}, To: Date{Year: 2007, Month: 8},
+			},
+			Lines: []string{
+				"Coordinated the development of an upgraded world editor in C# to help streamline content production.",
+				"Engineered a flexible system for reading/writing custom content file formats.",
+				"Improved the performance of the real­time landscape shadowing mechanism.",
+			},
+		},
 	},
 }
 
 func t() *template.Template {
 	return template.Must(template.New("").Parse(`
+{{define "section"}}
+	<div class="sectionheader">{{.Title}}</div>
+	{{range .Items}}
+		{{template "item" .}}
+	{{end}}
+{{end}}
+
 {{define "item"}}
 <div class="item">
 	<div class="itemheader">
 		<div class="jobtitle">{{.JobTitle}}</div>
-		<div class="companyname">{{.CompanyName}}</div>
+		{{with .CompanyName}}<div class="companyname">{{.}}</div>{{end}}
 		<div class="dates">{{.Dates}}</div>
 	</div>
 	<ul>
@@ -68,55 +135,7 @@ func t() *template.Template {
 	<div class="name">Dmitri Shuralyov</div>
 	<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
 	<div class="corediv">
-		<div class="sectionheader">Experience</div>
-		{{template "item" .}}
-		<div class="item">
-			<div class="itemheader">
-				<div class="jobtitle">Senior Software Engineer, Backend</div>
-				<div class="companyname">Triggit</div>
-				<div class="dates">06/2013 - 03/2015</div>
-			</div>
-			<ul>
-				<li>Built distributed low­latency web services and required components for processing hundreds of thousands of ad auction requests per second.</li>
-				<li>Automated, improved practices for reproducible builds, continuous testing of complex projects.</li>
-				<li>Improved performance and functionality of an ad­serving and bidding platform.</li>
-				<li>Created detailed dashboards for monitoring and visualizing logs, statistics, controlling configuration and other relevant metrics.</li>
-			</ul>
-		</div>
-		<div class="item">
-			<div class="itemheader">
-				<div class="jobtitle">Toolmaker</div>
-				<div class="dates">2012 - 06/2013</div>
-			</div>
-			<ul>
-				<li>Researched and implemented experimental software development tools.</li>
-				<li>Created Conception, a 1st place winning project of <a href="http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/" target="_blank">LIVE 2013 Programming Contest</a>.</li>
-			</ul>
-		</div>
-		<div class="item">
-			<div class="itemheader">
-				<div class="jobtitle">Junior Application Programmer</div>
-				<div class="companyname">CYSSC/MCYS, Ontario Public Service</div>
-				<div class="dates">09/2007 - 08/2008</div>
-			</div>
-			<ul>
-				<li>Designed, created and maintained a complex Java GUI application to aid the development and maintenance of large database applications.</li>
-				<li>Wrote PL/SQL procedures to easily enable/disable logging on Oracle DB server on the fly.</li>
-				<li>Researched the best approach for new Monitoring Report development; implemented it.</li>
-			</ul>
-		</div>
-		<div class="item">
-			<div class="itemheader">
-				<div class="jobtitle">Game Engine Engineer, Tools</div>
-				<div class="companyname">Reverie World Studios</div>
-				<div title="8 months" class="dates">01/2007 - 08/2007</div><!-- TODO: Think about the title thing, do it? -->
-			</div>
-			<ul>
-				<li>Coordinated the development of an upgraded world editor in C# to help streamline content production.</li>
-				<li>Engineered a flexible system for reading/writing custom content file formats.</li>
-				<li>Improved the performance of the real­time landscape shadowing mechanism.</li>
-			</ul>
-		</div>
+		{{template "section" .}}
 		<div class="sectionheader">Projects</div>
 		<div class="item">
 			<div class="itemheader">
