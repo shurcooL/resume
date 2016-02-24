@@ -19,12 +19,18 @@ func main() {
 
 func setup() {
 	var buf bytes.Buffer
-	err := t().ExecuteTemplate(&buf, "body", experience)
+	err := t().ExecuteTemplate(&buf, "body", DmitriShuralyov{})
 	if err != nil {
 		panic(err)
 	}
 	document.Body().SetInnerHTML(buf.String())
 }
+
+type DmitriShuralyov struct{}
+
+func (DmitriShuralyov) Experience() Section { return experience }
+
+func (DmitriShuralyov) Projects() Section { return projects }
 
 type Section struct {
 	Title string
@@ -34,8 +40,10 @@ type Section struct {
 type Item struct {
 	JobTitle    string
 	CompanyName string
-	Dates       DateRange
+	Dates       interface{} // TODO: Is using blank interface to allow DateRange and single Date the way to go?
 	Lines       []string
+
+	WIP bool
 }
 
 var experience = Section{
@@ -76,7 +84,7 @@ var experience = Section{
 			Lines: []string{
 				"Researched and implemented experimental software development tools.",
 				// TODO: Link.
-				`Created Conception, a 1st place winning project of <a href="http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/" target="_blank">LIVE 2013 Programming Contest</a>.`,
+				`Created Conception, a 1st place winning project of [LIVE 2013 Programming Contest](http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/).`,
 			},
 		},
 		{
@@ -108,6 +116,46 @@ var experience = Section{
 	},
 }
 
+var projects = Section{
+	Title: "Projects",
+
+	Items: []Item{
+		// TODO: ProjectItems?
+		{
+			JobTitle: "Conception",
+			Dates: DateRange{
+				// TODO: Think about the title thing, do it?
+				//       title="8 months"
+				From: Date{Year: 2012}, To: Date{Year: 2014},
+			},
+			Lines: []string{
+				"Primary creator of a large open­source systems project; implemented in C++ and Go, solved low­level systems challenges to achieve desired behavior.",
+				"Routinely implemented and iterated upon experimental and novel interface ideas, interaction techniques and design prototypes, some showed great promise.",
+				"Discovered new techniques that allow for further reduction of information duplication than existing representations.",
+				// TODO: Link.
+				`1st place winning project of [LIVE 2013 Programming Contest](http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/).`,
+			},
+		},
+		{
+			JobTitle: "Slide: A User­-Friendly System for Rapid and Precise Object Placement",
+			Dates:    Date{Year: 2011},
+			Lines: []string{
+				"Implemented in C++ with OpenGL, GLSL graphics, employed multiple advanced graphics optimization techniques to get high performance and accurate results in difficult conditions.",
+				"Had weekly meetings with supervisor to discuss and determine the project direction, iterated based on feedback.",
+			},
+		},
+		{
+			JobTitle: "Project eX0",
+			Dates:    Date{Year: 2007},
+			Lines: []string{
+				"Implemented in C++ with OpenGL graphics.",
+				"Developed own high­-performance and reliable networking protocol over raw TCP/UDP sockets, which uniquely combined beneficial properties of past networking models.",
+			},
+			WIP: true,
+		},
+	},
+}
+
 func t() *template.Template {
 	return template.Must(template.New("").Parse(`
 {{define "section"}}
@@ -118,7 +166,7 @@ func t() *template.Template {
 {{end}}
 
 {{define "item"}}
-<div class="item">
+<div class="item{{if .WIP}} wip{{end}}">
 	<div class="itemheader">
 		<div class="jobtitle">{{.JobTitle}}</div>
 		{{with .CompanyName}}<div class="companyname">{{.}}</div>{{end}}
@@ -135,40 +183,8 @@ func t() *template.Template {
 	<div class="name">Dmitri Shuralyov</div>
 	<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
 	<div class="corediv">
-		{{template "section" .}}
-		<div class="sectionheader">Projects</div>
-		<div class="item">
-			<div class="itemheader">
-				<div class="projectname">Conception</div>
-				<div class="dates">2012 - 2014</div>
-			</div>
-			<ul>
-				<li>Primary creator of a large open­source systems project; implemented in C++ and Go, solved low­level systems challenges to achieve desired behaviour.</li>
-				<li>Routinely implemented and iterated upon experimental and novel interface ideas, interaction techniques and design prototypes, some showed great promise.</li>
-				<li>Discovered new techniques that allow for further reduction of information duplication than existing representations.</li>
-				<li>1st place winning project of <a href="http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/" target="_blank">LIVE 2013 Programming Contest</a>.</li>
-			</ul>
-		</div>
-		<div class="item">
-			<div class="itemheader">
-				<div class="projectname">Slide: A User­-Friendly System for Rapid and Precise Object Placement</div>
-				<div class="dates">2011</div>
-			</div>
-			<ul>
-				<li>Implemented in C++ with OpenGL, GLSL graphics, employed multiple advanced graphics optimization techniques to get high performance and accurate results in difficult conditions.</li>
-				<li>Had weekly meetings with supervisor to discuss and determine the project direction, iterated based on feedback.</li>
-			</ul>
-		</div>
-		<div class="item wip">
-			<div class="itemheader">
-				<div class="projectname">Project eX0 </div>
-				<div class="dates">2007</div>
-			</div>
-			<ul>
-				<li>Implemented in C++ with OpenGL graphics.</li>
-				<li>Developed own high­-performance and reliable networking protocol over raw TCP/UDP sockets, which uniquely combined beneficial properties of past networking models.</li>
-			</ul>
-		</div>
+		{{template "section" .Experience}}
+		{{template "section" .Projects}}
 		<div class="sectionheader">Education</div>
 		<div class="item">
 			<div class="itemheader">
@@ -176,7 +192,7 @@ func t() *template.Template {
 				<div class="dates">2009 - 2011</div>
 			</div>
 			<ul>
-				<li>Master's Degree, Computer Science.</li>
+				<li>Master's Degree, Computer Science</li>
 			</ul>
 		</div>
 		<div class="item">
@@ -185,15 +201,15 @@ func t() *template.Template {
 				<div class="dates">2004 - 2009</div>
 			</div>
 			<ul>
-				<li>Bachelor's Degree, Specialized Honors Computer Science.</li>
+				<li>Bachelor's Degree, Specialized Honors Computer Science</li>
 			</ul>
 		</div>
 		<div class="sectionheader">Knowledge and Skills Highlights</div>
 		<div class="item">
-			<b>Languages and APIs</b>: Go<span class="fade">, C/C++, Java, C#, </span>OpenGL<span class="fade">, SQL.</span>
+			<b>Languages and APIs</b>: Go<span class="fade">, C/C++, Java, C#, </span>OpenGL<span class="fade">, SQL</span>
 		</div>
 		<div class="item">
-			<b>Software</b>: OS X, Linux, Windows, git, Microsoft Visual Studio, Xcode.
+			<b>Software</b>: OS X, Linux, Windows, git, Microsoft Visual Studio, Xcode
 		</div>
 	</div>
 {{end}}
