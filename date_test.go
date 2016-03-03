@@ -27,6 +27,15 @@ func ExampleDate() {
 	// Present
 }
 
+func ExampleDateRange() {
+	dr := DateRange{
+		From: Date{Year: 2010, Month: 2}, To: Date{Year: 2012, Month: 6},
+	}
+	render(dr)
+
+	// Output: 02/2010 - 06/2012
+}
+
 func render(c Component) {
 	nodes, err := c.Render()
 	if err != nil {
