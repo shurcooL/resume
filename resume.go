@@ -55,7 +55,7 @@ var experience = Section{
 			JobTitle:    "Senior Software Engineer, Full Stack",
 			CompanyName: "Sourcegraph",
 			Dates: DateRange{
-				From: Date{Year: 2015, Month: 4}, To: Present,
+				From: Date{Year: 2015, Month: 4}, To: Present{},
 			},
 			Lines: []Component{
 				Text("Implemented significant non­trivial pieces of core Sourcegraph functionality in Go, including backend language analysis enhancements, and frontend components and visualizations."),
@@ -103,8 +103,6 @@ var experience = Section{
 			JobTitle:    "Game Engine Engineer, Tools",
 			CompanyName: "Reverie World Studios",
 			Dates: DateRange{
-				// TODO: Think about the title thing, do it?
-				//       title="8 months"
 				From: Date{Year: 2007, Month: 1}, To: Date{Year: 2007, Month: 8},
 			},
 			Lines: []Component{
@@ -124,8 +122,6 @@ var projects = Section{
 		{
 			JobTitle: "Conception",
 			Dates: DateRange{
-				// TODO: Think about the title thing, do it?
-				//       title="8 months"
 				From: Date{Year: 2012}, To: Date{Year: 2014},
 			},
 			Lines: []Component{
@@ -196,7 +192,7 @@ func t() *template.Template {
 		<div class="item">
 			<div class="itemheader">
 				<div class="schoolname">York University</div>
-				<div class="dates">2009 - 2011</div>
+				<div class="dates"><span title="TODO">2009 - 2011</span></div>
 			</div>
 			<ul>
 				<li>Master's Degree, Computer Science</li>
@@ -205,7 +201,7 @@ func t() *template.Template {
 		<div class="item">
 			<div class="itemheader">
 				<div class="schoolname">York University</div>
-				<div class="dates">2004 - 2009</div>
+				<div class="dates"><span title="TODO">2004 - 2009</span></div>
 			</div>
 			<ul>
 				<li>Bachelor's Degree, Specialized Honors Computer Science</li>

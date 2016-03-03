@@ -1,10 +1,9 @@
-package main_test
+package main
 
 import (
 	"fmt"
 
 	"github.com/shurcooL/htmlg"
-	. "github.com/shurcooL/resume"
 )
 
 func ExampleDate() {
@@ -17,7 +16,7 @@ func ExampleDate() {
 		render(d)
 	}
 	{
-		d := Present
+		d := Present{}
 		render(d)
 	}
 
@@ -33,7 +32,7 @@ func ExampleDateRange() {
 	}
 	render(dr)
 
-	// Output: 02/2010 - 06/2012
+	// Output: <span title="2 years, 4 months">02/2010 - 06/2012</span>
 }
 
 func render(c Component) {
@@ -42,4 +41,17 @@ func render(c Component) {
 		panic(err)
 	}
 	fmt.Println(htmlg.Render(nodes...))
+}
+
+func ExampleYearsMonths() {
+	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2010, Month: 2}))
+	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2010, Month: 8}))
+	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2011, Month: 2}))
+	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2012, Month: 6}))
+
+	// Output:
+	// 0 months
+	// 6 months
+	// 1 years
+	// 2 years, 4 months
 }
