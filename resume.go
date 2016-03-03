@@ -33,6 +33,8 @@ func (DmitriShuralyov) Experience() Section { return experience }
 
 func (DmitriShuralyov) Projects() Section { return projects }
 
+func (DmitriShuralyov) Education() Section { return education }
+
 type Section struct {
 	Title string
 	Items []Item
@@ -151,6 +153,32 @@ var projects = Section{
 	},
 }
 
+var education = Section{
+	Title: "Education",
+
+	Items: []Item{
+		// TODO: EducationItems?
+		{
+			JobTitle: "York University",
+			Dates: DateRange{
+				From: Date{Year: 2009}, To: Date{Year: 2011},
+			},
+			Lines: []Component{
+				Text("Master's Degree, Computer Science"),
+			},
+		},
+		{
+			JobTitle: "York University",
+			Dates: DateRange{
+				From: Date{Year: 2004}, To: Date{Year: 2009},
+			},
+			Lines: []Component{
+				Text("Bachelor's Degree, Specialized Honors Computer Science"),
+			},
+		},
+	},
+}
+
 func t() *template.Template {
 	return template.Must(template.New("").Funcs(template.FuncMap{
 		"render": func(c Component) template.HTML { return htmlg.Render(c.Render()...) },
@@ -182,25 +210,7 @@ func t() *template.Template {
 	<div class="corediv">
 		{{template "section" .Experience}}
 		{{template "section" .Projects}}
-		<div class="sectionheader">Education</div>
-		<div class="item">
-			<div class="itemheader">
-				<div class="schoolname">York University</div>
-				<div class="dates"><span title="TODO">2009 - 2011</span></div>
-			</div>
-			<ul>
-				<li>Master's Degree, Computer Science</li>
-			</ul>
-		</div>
-		<div class="item">
-			<div class="itemheader">
-				<div class="schoolname">York University</div>
-				<div class="dates"><span title="TODO">2004 - 2009</span></div>
-			</div>
-			<ul>
-				<li>Bachelor's Degree, Specialized Honors Computer Science</li>
-			</ul>
-		</div>
+		{{template "section" .Education}}
 		<div class="sectionheader">Knowledge and Skills Highlights</div>
 		<div class="item">
 			<b>Languages and APIs</b>: Go<span class="fade">, C/C++, Java, C#, </span>OpenGL<span class="fade">, SQL</span>
