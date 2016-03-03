@@ -16,7 +16,7 @@ type Date struct {
 
 func (d Date) Date() (year int, month time.Month) { return d.Year, d.Month }
 
-func (d Date) Render() ([]*html.Node, error) {
+func (d Date) Render() []*html.Node {
 	switch d.Month {
 	case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12:
 		return Text(fmt.Sprintf("%02d/%d", d.Month, d.Year)).Render()
@@ -33,7 +33,7 @@ func (Present) Date() (year int, month time.Month) {
 	return year, month
 }
 
-func (p Present) Render() ([]*html.Node, error) {
+func (p Present) Render() []*html.Node {
 	return Text("Present").Render()
 }
 
@@ -47,14 +47,10 @@ type DateRange struct {
 	From, To Dater
 }
 
-func (dr DateRange) Render() ([]*html.Node, error) {
-	nodes, err := List{dr.From, Text(" - "), dr.To}.Render()
-	if err != nil {
-		return nil, err
-	}
-	span := span(nodes...)
+func (dr DateRange) Render() []*html.Node {
+	span := span(List{dr.From, Text(" - "), dr.To}.Render()...)
 	span.Attr = append(span.Attr, html.Attribute{Key: atom.Title.String(), Val: yearsMonths(dr.From, dr.To)})
-	return []*html.Node{span}, nil
+	return []*html.Node{span}
 }
 
 // yearsMonths describes the length of a date range in the number of years and months.

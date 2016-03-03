@@ -10,13 +10,13 @@ import (
 )
 
 type Component interface {
-	Render() ([]*html.Node, error)
+	Render() []*html.Node
 }
 
 type Text string
 
-func (t Text) Render() ([]*html.Node, error) {
-	return []*html.Node{htmlg.Text(string(t))}, nil
+func (t Text) Render() []*html.Node {
+	return []*html.Node{htmlg.Text(string(t))}
 }
 
 type Link struct {
@@ -24,12 +24,13 @@ type Link struct {
 	Href template.URL
 }
 
-func (l Link) Render() ([]*html.Node, error) {
+func (l Link) Render() []*html.Node {
 	a := htmlg.A(l.Text, l.Href)
 	a.Attr = append(a.Attr, html.Attribute{Key: atom.Target.String(), Val: "_blank"})
-	return []*html.Node{a}, nil
+	return []*html.Node{a}
 }
 
+// join Components and strings into a single Component.
 func join(a ...interface{}) Component {
 	var list List
 	for _, v := range a {
@@ -39,7 +40,7 @@ func join(a ...interface{}) Component {
 		case string:
 			list = append(list, Text(v))
 		default:
-			return Error{fmt.Errorf("join: unsupported type: %T", v)}
+			panic(fmt.Errorf("join: unsupported type: %T", v))
 		}
 	}
 	return list
@@ -47,18 +48,10 @@ func join(a ...interface{}) Component {
 
 type List []Component
 
-func (l List) Render() ([]*html.Node, error) {
+func (l List) Render() []*html.Node {
 	var nodes []*html.Node
 	for _, c := range l {
-		n, err := c.Render()
-		if err != nil {
-			return nil, err
-		}
-		nodes = append(nodes, n...)
+		nodes = append(nodes, c.Render()...)
 	}
-	return nodes, nil
+	return nodes
 }
-
-type Error struct{ err error }
-
-func (e Error) Render() ([]*html.Node, error) { return nil, e.err }

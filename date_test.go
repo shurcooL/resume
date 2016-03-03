@@ -35,13 +35,7 @@ func ExampleDateRange() {
 	// Output: <span title="2 years, 4 months">02/2010 - 06/2012</span>
 }
 
-func render(c Component) {
-	nodes, err := c.Render()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(htmlg.Render(nodes...))
-}
+func render(c Component) { fmt.Println(htmlg.Render(c.Render()...)) }
 
 func ExampleYearsMonths() {
 	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2010, Month: 2}))

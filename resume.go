@@ -153,13 +153,7 @@ var projects = Section{
 
 func t() *template.Template {
 	return template.Must(template.New("").Funcs(template.FuncMap{
-		"render": func(c Component) (template.HTML, error) {
-			nodes, err := c.Render()
-			if err != nil {
-				return "", err
-			}
-			return htmlg.Render(nodes...), nil
-		},
+		"render": func(c Component) template.HTML { return htmlg.Render(c.Render()...) },
 	}).Parse(`
 {{define "section"}}
 	<div class="sectionheader">{{.Title}}</div>
