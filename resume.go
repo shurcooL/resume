@@ -41,7 +41,7 @@ type Section struct {
 type Item struct {
 	JobTitle    string
 	CompanyName string
-	Dates       interface{} // TODO: Is using blank interface to allow DateRange and single Date the way to go?
+	Dates       Component
 	Lines       []Component
 
 	WIP bool
@@ -177,7 +177,7 @@ func t() *template.Template {
 	<div class="itemheader">
 		<div class="jobtitle">{{.JobTitle}}</div>
 		{{with .CompanyName}}<div class="companyname">{{.}}</div>{{end}}
-		<div class="dates">{{.Dates}}</div>
+		<div class="dates">{{render .Dates}}</div>
 	</div>
 	<ul>
 		{{range .Lines}}<li>{{render .}}</li>
