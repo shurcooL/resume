@@ -60,7 +60,7 @@ var experience = Section{
 				From: Date{Year: 2015, Month: 4}, To: Present{},
 			},
 			Lines: []Component{
-				Text("Implemented significant non­trivial pieces of core Sourcegraph functionality in Go, including backend language analysis enhancements, and frontend components and visualizations."),
+				Text("Implemented significant non-trivial pieces of core Sourcegraph functionality in Go, including backend language analysis enhancements, and frontend components and visualizations."),
 				Text("Showed initiative by taking on refactors that led to significant performance improvements."),
 				Text("Made numerous contributions to open source Go libraries created or used by Sourcegraph."),
 				Text("Shared knowledge and best practices with new teammates to enable high quality contributions."),
@@ -73,9 +73,9 @@ var experience = Section{
 				From: Date{Year: 2013, Month: 6}, To: Date{Year: 2015, Month: 3},
 			},
 			Lines: []Component{
-				Text("Built distributed low­latency web services and required components for processing hundreds of thousands of ad auction requests per second."),
+				Text("Built distributed low-latency web services and required components for processing hundreds of thousands of ad auction requests per second."),
 				Text("Automated, improved practices for reproducible builds, continuous testing of complex projects."),
-				Text("Improved performance and functionality of an ad­serving and bidding platform."),
+				Text("Improved performance and functionality of an ad-serving and bidding platform."),
 				Text("Created detailed dashboards for monitoring and visualizing logs, statistics, controlling configuration and other relevant metrics."),
 			},
 		},
@@ -98,7 +98,7 @@ var experience = Section{
 			Lines: []Component{
 				Text("Designed, created and maintained a complex Java GUI application to aid the development and maintenance of large database applications."),
 				Text("Wrote PL/SQL procedures to easily enable/disable logging on Oracle DB server on the fly."),
-				Text("Researched the best approach for new Monitoring Report development; implemented it."),
+				Text("Researched the best approach for new Monitoring Report development; implemented it."),
 			},
 		},
 		{
@@ -110,7 +110,7 @@ var experience = Section{
 			Lines: []Component{
 				Text("Coordinated the development of an upgraded world editor in C# to help streamline content production."),
 				Text("Engineered a flexible system for reading/writing custom content file formats."),
-				Text("Improved the performance of the real­time landscape shadowing mechanism."),
+				Text("Improved the performance of the real-time landscape shadowing mechanism."),
 			},
 		},
 	},
@@ -127,14 +127,14 @@ var projects = Section{
 				From: Date{Year: 2012}, To: Date{Year: 2014},
 			},
 			Lines: []Component{
-				Text("Primary creator of a large open­source systems project; implemented in C++ and Go, solved low­level systems challenges to achieve desired behavior."),
+				Text("Primary creator of a large open-source systems project; implemented in C++ and Go, solved low-level systems challenges to achieve desired behavior."),
 				Text("Routinely implemented and iterated upon experimental and novel interface ideas, interaction techniques and design prototypes, some showed great promise."),
 				Text("Discovered new techniques that allow for further reduction of information duplication than existing representations."),
 				join("1st place winning project of ", Link{"LIVE 2013 Programming Contest", template.URL("http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/")}, "."),
 			},
 		},
 		{
-			JobTitle: "Slide: A User­-Friendly System for Rapid and Precise Object Placement",
+			JobTitle: "Slide: A User-Friendly System for Rapid and Precise Object Placement",
 			Dates:    Date{Year: 2011},
 			Lines: []Component{
 				Text("Implemented in C++ with OpenGL, GLSL graphics, employed multiple advanced graphics optimization techniques to get high performance and accurate results in difficult conditions."),
@@ -146,7 +146,7 @@ var projects = Section{
 			Dates:    Date{Year: 2007},
 			Lines: []Component{
 				Text("Implemented in C++ with OpenGL graphics."),
-				Text("Developed own high­-performance and reliable networking protocol over raw TCP/UDP sockets, which uniquely combined beneficial properties of past networking models."),
+				Text("Developed own high-performance and reliable networking protocol over raw TCP/UDP sockets, which uniquely combined beneficial properties of past networking models."),
 			},
 			WIP: true,
 		},
