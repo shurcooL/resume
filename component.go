@@ -30,7 +30,7 @@ func (l Link) Render() []*html.Node {
 	return []*html.Node{a}
 }
 
-// join Components and strings into a single Component.
+// join components and strings into a single Component.
 func join(a ...interface{}) Component {
 	var list List
 	for _, v := range a {
