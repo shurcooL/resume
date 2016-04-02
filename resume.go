@@ -33,6 +33,8 @@ func (DmitriShuralyov) Experience() Section { return experience }
 
 func (DmitriShuralyov) Projects() Section { return projects }
 
+func (DmitriShuralyov) Skills() Section { return skills }
+
 func (DmitriShuralyov) Education() Section { return education }
 
 type Section struct {
@@ -153,6 +155,35 @@ var projects = Section{
 	},
 }
 
+var skills = Section{
+	Title: "Skills",
+
+	Items: []Item{
+		{
+			JobTitle: "Languages and APIs",
+			Lines: []Component{
+				Text("Go"),
+				fade("C/C++"),
+				fade("Java"),
+				fade("C#"),
+				Text("OpenGL"),
+				fade("SQL"),
+			},
+		},
+		{
+			JobTitle: "Software",
+			Lines: []Component{
+				Text("OS X"),
+				Text("Linux"),
+				Text("Windows"),
+				Text("git"),
+				Text("Visual Studio"),
+				Text("Xcode"),
+			},
+		},
+	},
+}
+
 var education = Section{
 	Title: "Education",
 
@@ -186,7 +217,9 @@ func t() *template.Template {
 {{define "section"}}
 	<div class="sectionheader">{{.Title}}</div>
 	{{range .Items}}
-		{{template "item" .}}
+		{{if not .WIP}}
+			{{template "item" .}}
+		{{end}}
 	{{end}}
 {{end}}
 
@@ -195,7 +228,7 @@ func t() *template.Template {
 	<div class="itemheader">
 		<div class="jobtitle">{{.JobTitle}}</div>
 		{{with .CompanyName}}<div class="companyname">{{.}}</div>{{end}}
-		<div class="dates">{{render .Dates}}</div>
+		{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
 	</div>
 	<ul>
 		{{range .Lines}}<li>{{render .}}</li>
@@ -210,14 +243,8 @@ func t() *template.Template {
 	<div class="corediv">
 		{{template "section" .Experience}}
 		{{template "section" .Projects}}
+		{{template "section" .Skills}}
 		{{template "section" .Education}}
-		<div class="sectionheader">Knowledge and Skills Highlights</div>
-		<div class="item">
-			<b>Languages and APIs</b>: Go<span class="fade">, C/C++, Java, C#, </span>OpenGL<span class="fade">, SQL</span>
-		</div>
-		<div class="item">
-			<b>Software</b>: OS X, Linux, Windows, git, Microsoft Visual Studio, Xcode
-		</div>
 	</div>
 {{end}}
 `))

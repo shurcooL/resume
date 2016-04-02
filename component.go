@@ -19,6 +19,12 @@ func (t Text) Render() []*html.Node {
 	return []*html.Node{htmlg.Text(string(t))}
 }
 
+type fade string
+
+func (t fade) Render() []*html.Node {
+	return []*html.Node{htmlg.SpanClass("fade", htmlg.Text(string(t)))}
+}
+
 type Link struct {
 	Text string
 	Href template.URL
