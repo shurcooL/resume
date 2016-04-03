@@ -4,9 +4,12 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 
 	"github.com/shurcooL/htmlg"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"honnef.co/go/js/dom"
 )
 
@@ -161,23 +164,23 @@ var skills = Section{
 		{
 			Title: "Languages and APIs",
 			Lines: []Component{
-				Text("Go"),
-				fade("C/C++"),
-				fade("Java"),
-				fade("C#"),
-				Text("OpenGL"),
-				fade("SQL"),
+				reactable("Go", Text("Go")),
+				reactable("C/C++", fade("C/C++")),
+				reactable("Java", fade("Java")),
+				reactable("C#", fade("C#")),
+				reactable("OpenGL", Text("OpenGL")),
+				reactable("SQL", fade("SQL")),
 			},
 		},
 		{
 			Title: "Software",
 			Lines: []Component{
-				Text("OS X"),
-				Text("Linux"),
-				Text("Windows"),
-				Text("git"),
-				Text("Visual Studio"),
-				Text("Xcode"),
+				reactable("OS X", Text("OS X")),
+				reactable("Linux", Text("Linux")),
+				reactable("Windows", Text("Windows")),
+				reactable("git", Text("git")),
+				reactable("Visual Studio", Text("Visual Studio")),
+				reactable("Xcode", Text("Xcode")),
 			},
 		},
 	},
@@ -208,6 +211,51 @@ var education = Section{
 	},
 }
 
+func reactable(id string, a ...interface{}) Component {
+	list := join(a...)
+	list = append(list, NewReaction{ReactableID: id})
+	return list
+}
+
+type NewReaction struct {
+	ReactableID string
+}
+
+func (nr NewReaction) Render() []*html.Node {
+	// TODO: Make this much nicer.
+	/*
+		<a href="javascript:" title="React" onclick="ShowReactionMenu(this, event, {{.}});">
+			<div class="new-reaction">
+				<i class="octicon octicon-smiley"><sup>+</sup></i>
+			</div>
+		</a>
+	*/
+	sup := &html.Node{
+		Type: html.ElementNode, Data: atom.Sup.String(),
+	}
+	sup.AppendChild(htmlg.Text("+"))
+	i := &html.Node{
+		Type: html.ElementNode, Data: atom.I.String(),
+		Attr: []html.Attribute{{Key: atom.Class.String(), Val: "octicon octicon-smiley"}},
+	}
+	i.AppendChild(sup)
+	div := &html.Node{
+		Type: html.ElementNode, Data: atom.Div.String(),
+		Attr: []html.Attribute{{Key: atom.Class.String(), Val: "new-reaction"}},
+	}
+	div.AppendChild(i)
+	a := &html.Node{
+		Type: html.ElementNode, Data: atom.A.String(),
+		Attr: []html.Attribute{
+			{Key: atom.Href.String(), Val: "javascript:"},
+			{Key: atom.Title.String(), Val: "React"},
+			{Key: atom.Onclick.String(), Val: fmt.Sprintf("ShowReactionMenu(this, event, %q);", nr.ReactableID)},
+		},
+	}
+	a.AppendChild(div)
+	return []*html.Node{a}
+}
+
 func t() *template.Template {
 	return template.Must(template.New("").Funcs(template.FuncMap{
 		"render": func(c Component) template.HTML { return htmlg.Render(c.Render()...) },
@@ -229,7 +277,7 @@ func t() *template.Template {
 		{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
 	</div>
 	<ul>
-		{{range .Lines}}<li>{{render .}}{{template "new-reaction" 0}}</li>
+		{{range .Lines}}<li>{{render .}}</li>
 		{{end}}
 	</ul>
 </div>
@@ -245,12 +293,5 @@ func t() *template.Template {
 		{{template "section" .Education}}
 	</div>
 {{end}}
-
-{{/* Dot is an issues.Comment.ID. */}}
-{{define "new-reaction"}}<a href="javascript:" title="React" onclick="ShowReactionMenu(this, event, {{.}});"
-	><div class="new-reaction"
-		><i class="octicon octicon-smiley"><sup>+</sup></i
-	></div
-></a>{{end}}
 `))
 }

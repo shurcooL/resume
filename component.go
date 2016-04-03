@@ -37,7 +37,7 @@ func (l Link) Render() []*html.Node {
 }
 
 // join components and strings into a single Component.
-func join(a ...interface{}) Component {
+func join(a ...interface{}) List {
 	var list List
 	for _, v := range a {
 		switch v := v.(type) {
