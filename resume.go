@@ -43,10 +43,10 @@ type Section struct {
 }
 
 type Item struct {
-	JobTitle    string
-	CompanyName string
-	Dates       Component
-	Lines       []Component
+	Title    string
+	Subtitle string
+	Dates    Component
+	Lines    []Component
 
 	WIP bool
 }
@@ -56,8 +56,8 @@ var experience = Section{
 
 	Items: []Item{
 		{
-			JobTitle:    "Senior Software Engineer, Full Stack",
-			CompanyName: "Sourcegraph",
+			Title:    "Senior Software Engineer, Full Stack",
+			Subtitle: "Sourcegraph",
 			Dates: DateRange{
 				From: Date{Year: 2015, Month: 4}, To: Present{},
 			},
@@ -69,8 +69,8 @@ var experience = Section{
 			},
 		},
 		{
-			JobTitle:    "Senior Software Engineer, Backend",
-			CompanyName: "Triggit",
+			Title:    "Senior Software Engineer, Backend",
+			Subtitle: "Triggit",
 			Dates: DateRange{
 				From: Date{Year: 2013, Month: 6}, To: Date{Year: 2015, Month: 3},
 			},
@@ -82,7 +82,7 @@ var experience = Section{
 			},
 		},
 		{
-			JobTitle: "Toolmaker",
+			Title: "Toolmaker",
 			Dates: DateRange{
 				From: Date{Year: 2012}, To: Date{Year: 2013, Month: 6},
 			},
@@ -92,8 +92,8 @@ var experience = Section{
 			},
 		},
 		{
-			JobTitle:    "Junior Application Programmer",
-			CompanyName: "CYSSC/MCYS, Ontario Public Service",
+			Title:    "Junior Application Programmer",
+			Subtitle: "CYSSC/MCYS, Ontario Public Service",
 			Dates: DateRange{
 				From: Date{Year: 2007, Month: 9}, To: Date{Year: 2008, Month: 8},
 			},
@@ -104,8 +104,8 @@ var experience = Section{
 			},
 		},
 		{
-			JobTitle:    "Game Engine Engineer, Tools",
-			CompanyName: "Reverie World Studios",
+			Title:    "Game Engine Engineer, Tools",
+			Subtitle: "Reverie World Studios",
 			Dates: DateRange{
 				From: Date{Year: 2007, Month: 1}, To: Date{Year: 2007, Month: 8},
 			},
@@ -122,9 +122,8 @@ var projects = Section{
 	Title: "Projects",
 
 	Items: []Item{
-		// TODO: ProjectItems?
 		{
-			JobTitle: "Conception",
+			Title: "Conception",
 			Dates: DateRange{
 				From: Date{Year: 2012}, To: Date{Year: 2014},
 			},
@@ -136,16 +135,16 @@ var projects = Section{
 			},
 		},
 		{
-			JobTitle: "Slide: A User-Friendly System for Rapid and Precise Object Placement",
-			Dates:    Date{Year: 2011},
+			Title: "Slide: A User-Friendly System for Rapid and Precise Object Placement",
+			Dates: Date{Year: 2011},
 			Lines: []Component{
 				Text("Implemented in C++ with OpenGL, GLSL graphics, employed multiple advanced graphics optimization techniques to get high performance and accurate results in difficult conditions."),
 				Text("Had weekly meetings with supervisor to discuss and determine the project direction, iterated based on feedback."),
 			},
 		},
 		{
-			JobTitle: "Project eX0",
-			Dates:    Date{Year: 2007},
+			Title: "Project eX0",
+			Dates: Date{Year: 2007},
 			Lines: []Component{
 				Text("Implemented in C++ with OpenGL graphics."),
 				Text("Developed own high-performance and reliable networking protocol over raw TCP/UDP sockets, which uniquely combined beneficial properties of past networking models."),
@@ -160,7 +159,7 @@ var skills = Section{
 
 	Items: []Item{
 		{
-			JobTitle: "Languages and APIs",
+			Title: "Languages and APIs",
 			Lines: []Component{
 				Text("Go"),
 				fade("C/C++"),
@@ -171,7 +170,7 @@ var skills = Section{
 			},
 		},
 		{
-			JobTitle: "Software",
+			Title: "Software",
 			Lines: []Component{
 				Text("OS X"),
 				Text("Linux"),
@@ -188,9 +187,8 @@ var education = Section{
 	Title: "Education",
 
 	Items: []Item{
-		// TODO: EducationItems?
 		{
-			JobTitle: "York University",
+			Title: "York University",
 			Dates: DateRange{
 				From: Date{Year: 2009}, To: Date{Year: 2011},
 			},
@@ -199,7 +197,7 @@ var education = Section{
 			},
 		},
 		{
-			JobTitle: "York University",
+			Title: "York University",
 			Dates: DateRange{
 				From: Date{Year: 2004}, To: Date{Year: 2009},
 			},
@@ -226,8 +224,8 @@ func t() *template.Template {
 {{define "item"}}
 <div class="item{{if .WIP}} wip{{end}}">
 	<div class="itemheader">
-		<div class="jobtitle">{{.JobTitle}}</div>
-		{{with .CompanyName}}<div class="companyname">{{.}}</div>{{end}}
+		<div class="title">{{.Title}}</div>
+		{{with .Subtitle}}<div class="subtitle">{{.}}</div>{{end}}
 		{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
 	</div>
 	<ul>
