@@ -2,6 +2,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Dmitri Shuralyov - Resume</title>
+		<link href="//cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.css" rel="stylesheet" type="text/css">
 		<style>
 			body {
 				font-family: Arial, Helvetica, sans-serif;
@@ -91,6 +92,39 @@
 			}
 			.wip {
 				background-color: #fff9ea;
+			}
+
+			li:hover div.new-reaction {
+				display: inline-block;
+			}
+
+			div.new-reaction {
+				cursor: pointer;
+				display: none;
+				box-sizing: border-box;
+				padding: 5px 2px 5px 4px;
+				height: 20px;
+				color: #aaa;
+				border: 1px solid #e0e0e0;
+				border-radius: 4px;
+				margin-left: 4px;
+				vertical-align: top;
+			}
+			div.new-reaction i {
+				font-size: 12px;
+				line-height: 0.8;
+			}
+			div.new-reaction:hover {
+				color: #eda000;
+				border: 1px solid #92def9;
+			}
+
+			sup {
+				top: -0.5em;
+				position: relative;
+				font-size: 75%;
+				line-height: 0;
+				vertical-align: baseline;
 			}
 		</style>
 		<script src="resume.js"></script>

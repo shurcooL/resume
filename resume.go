@@ -229,7 +229,7 @@ func t() *template.Template {
 		{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
 	</div>
 	<ul>
-		{{range .Lines}}<li>{{render .}}</li>
+		{{range .Lines}}<li>{{render .}}{{template "new-reaction" 0}}</li>
 		{{end}}
 	</ul>
 </div>
@@ -245,5 +245,12 @@ func t() *template.Template {
 		{{template "section" .Education}}
 	</div>
 {{end}}
+
+{{/* Dot is an issues.Comment.ID. */}}
+{{define "new-reaction"}}<a href="javascript:" title="React" onclick="ShowReactionMenu(this, event, {{.}});"
+	><div class="new-reaction"
+		><i class="octicon octicon-smiley"><sup>+</sup></i
+	></div
+></a>{{end}}
 `))
 }
