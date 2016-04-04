@@ -5,24 +5,27 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
+	"path"
+	"strings"
 
 	"github.com/shurcooL/htmlg"
+	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
 	"honnef.co/go/js/dom"
 )
 
 var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
 func main() {
-	document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
+	// TODO: Make this better/more reliable.
+	/*document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
 		go setup()
-	})
+	})*/
+	go setup()
 }
 
 func setup() {
@@ -30,6 +33,7 @@ func setup() {
 	if err != nil {
 		log.Println(err)
 	}
+	currentUser = authenticatedUser // THINK, HACK.
 
 	var buf bytes.Buffer
 	err = t().ExecuteTemplate(&buf, "body", DmitriShuralyov{AuthenticatedUser: authenticatedUser})
@@ -42,17 +46,17 @@ func setup() {
 }
 
 func getAuthenticatedUser() (*users.User, error) {
-	resp, err := http.Get("http://localhost:8080/user") // TODO: "/user"?
+	resp, err := http.Get("/user")
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	var u users.User
+	var u = new(users.User)
 	err = json.NewDecoder(resp.Body).Decode(&u)
 	if err != nil {
 		return nil, err
 	}
-	return &u, nil
+	return u, nil
 }
 
 type DmitriShuralyov struct {
@@ -238,49 +242,36 @@ var education = Section{
 	},
 }
 
+func getReactions(id string) ([]reactions.Reaction, error) {
+	reactableURL := path.Join(dom.GetWindow().Location().Host, dom.GetWindow().Location().Pathname, id)
+	reactableURL = strings.Replace(reactableURL, "localhost:8080", "dmitri.shuralyov.com", 1) // TEMP.
+	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {reactableURL}}.Encode()}
+	resp, err := http.Get(u.String())
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var rs []reactions.Reaction
+	err = json.NewDecoder(resp.Body).Decode(&rs)
+	if err != nil {
+		return nil, err
+	}
+	return rs, nil
+}
+
 func reactable(id string, a ...interface{}) Component {
+	//var reactions []reactions.Reaction
+	reactions, err := getReactions(id)
+	if err != nil {
+		log.Println(err)
+	}
+
 	list := join(a...)
+	for _, r := range reactions {
+		list = append(list, Reaction{r})
+	}
 	list = append(list, NewReaction{ReactableID: id})
 	return list
-}
-
-type NewReaction struct {
-	ReactableID string
-}
-
-func (nr NewReaction) Render() []*html.Node {
-	// TODO: Make this much nicer.
-	/*
-		<a href="javascript:" title="React" onclick="ShowReactionMenu(this, event, {{.}});">
-			<div class="new-reaction">
-				<i class="octicon octicon-smiley"><sup>+</sup></i>
-			</div>
-		</a>
-	*/
-	sup := &html.Node{
-		Type: html.ElementNode, Data: atom.Sup.String(),
-	}
-	sup.AppendChild(htmlg.Text("+"))
-	i := &html.Node{
-		Type: html.ElementNode, Data: atom.I.String(),
-		Attr: []html.Attribute{{Key: atom.Class.String(), Val: "octicon octicon-smiley"}},
-	}
-	i.AppendChild(sup)
-	div := &html.Node{
-		Type: html.ElementNode, Data: atom.Div.String(),
-		Attr: []html.Attribute{{Key: atom.Class.String(), Val: "new-reaction"}},
-	}
-	div.AppendChild(i)
-	a := &html.Node{
-		Type: html.ElementNode, Data: atom.A.String(),
-		Attr: []html.Attribute{
-			{Key: atom.Href.String(), Val: "javascript:"},
-			{Key: atom.Title.String(), Val: "React"},
-			{Key: atom.Onclick.String(), Val: fmt.Sprintf("ShowReactionMenu(this, event, '%q');", nr.ReactableID)},
-		},
-	}
-	a.AppendChild(div)
-	return []*html.Node{a}
 }
 
 func t() *template.Template {
