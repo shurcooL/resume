@@ -4,10 +4,14 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
+	"net/http"
 
 	"github.com/shurcooL/htmlg"
+	"github.com/shurcooL/users"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"honnef.co/go/js/dom"
@@ -22,15 +26,38 @@ func main() {
 }
 
 func setup() {
+	authenticatedUser, err := getAuthenticatedUser()
+	if err != nil {
+		log.Println(err)
+	}
+
 	var buf bytes.Buffer
-	err := t().ExecuteTemplate(&buf, "body", DmitriShuralyov{})
+	err = t().ExecuteTemplate(&buf, "body", DmitriShuralyov{AuthenticatedUser: authenticatedUser})
 	if err != nil {
 		panic(err)
 	}
 	document.Body().SetInnerHTML(buf.String())
+
+	setupReactionsMenu(authenticatedUser != nil)
 }
 
-type DmitriShuralyov struct{}
+func getAuthenticatedUser() (*users.User, error) {
+	resp, err := http.Get("http://localhost:8080/user") // TODO: "/user"?
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var u users.User
+	err = json.NewDecoder(resp.Body).Decode(&u)
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+type DmitriShuralyov struct {
+	AuthenticatedUser *users.User
+}
 
 func (DmitriShuralyov) Experience() Section { return experience }
 
@@ -249,7 +276,7 @@ func (nr NewReaction) Render() []*html.Node {
 		Attr: []html.Attribute{
 			{Key: atom.Href.String(), Val: "javascript:"},
 			{Key: atom.Title.String(), Val: "React"},
-			{Key: atom.Onclick.String(), Val: fmt.Sprintf("ShowReactionMenu(this, event, %q);", nr.ReactableID)},
+			{Key: atom.Onclick.String(), Val: fmt.Sprintf("ShowReactionMenu(this, event, '%q');", nr.ReactableID)},
 		},
 	}
 	a.AppendChild(div)
@@ -284,6 +311,14 @@ func t() *template.Template {
 {{end}}
 
 {{define "body"}}
+	{{with .AuthenticatedUser}}
+		<div style="text-align: right; margin-bottom: 20px; height: 18px; font-size: 12px;">
+			<a class="topbar-avatar" href="{{.HTMLURL}}" target="_blank" tabindex=-1
+				><img class="topbar-avatar" src="{{.AvatarURL}}" title="Signed in as {{.Login}}."
+			></a>
+			<form method="post" action="/logout" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign out"><input type="hidden" name="return" value="/"></form> {{/* TODO: Valid value for return. */}}
+		</div>
+	{{end}}
 	<div class="name">Dmitri Shuralyov</div>
 	<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
 	<div class="corediv">
