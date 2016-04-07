@@ -107,6 +107,10 @@ a.topbar-avatar {
 	margin-right: 6px;
 }
 
+div.reactable-container {
+	display: inline-block;
+	vertical-align: top;
+}
 li:hover div.new-reaction {
 	display: inline-block;
 }
@@ -147,7 +151,6 @@ div.reaction {
 a.reaction {
 	display: inline-block;
 	margin-left: 4px;
-	vertical-align: top;
 }
 
 div.others {

@@ -5,12 +5,15 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"path"
 	"strings"
+	"unicode"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
@@ -22,10 +25,10 @@ var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
 func main() {
 	// TODO: Make this better/more reliable.
-	/*document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
+	document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
 		go setup()
-	})*/
-	go setup()
+	})
+	//go setup()
 }
 
 func setup() {
@@ -51,6 +54,10 @@ func getAuthenticatedUser() (*users.User, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
 	var u = new(users.User)
 	err = json.NewDecoder(resp.Body).Decode(&u)
 	if err != nil {
@@ -251,27 +258,40 @@ func getReactions(id string) ([]reactions.Reaction, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	var rs []reactions.Reaction
-	err = json.NewDecoder(resp.Body).Decode(&rs)
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
+	var reactions []reactions.Reaction
+	err = json.NewDecoder(resp.Body).Decode(&reactions)
 	if err != nil {
 		return nil, err
 	}
-	return rs, nil
+	return reactions, nil
 }
 
-func reactable(id string, a ...interface{}) Component {
-	//var reactions []reactions.Reaction
-	reactions, err := getReactions(id)
-	if err != nil {
-		log.Println(err)
-	}
+func reactable(id string, c Component) Component {
+	id = sanitize(strings.Replace(id, "/", "-", -1)) // TODO: Clean this up.
+	return Reactable{ID: id, Content: c}
+}
 
-	list := join(a...)
-	for _, r := range reactions {
-		list = append(list, Reaction{r})
+// TODO: Clean this up.
+func sanitize(text string) string {
+	var anchorName []rune
+	var futureDash = false
+	for _, r := range []rune(text) {
+		switch {
+		case unicode.IsLetter(r) || unicode.IsNumber(r) || r == '.':
+			if futureDash && len(anchorName) > 0 {
+				anchorName = append(anchorName, '-')
+			}
+			futureDash = false
+			anchorName = append(anchorName, unicode.ToLower(r))
+		default:
+			futureDash = true
+		}
 	}
-	list = append(list, NewReaction{ReactableID: id})
-	return list
+	return string(anchorName)
 }
 
 func t() *template.Template {

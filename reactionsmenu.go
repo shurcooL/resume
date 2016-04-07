@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/shurcooL/go/gopherjs_http/jsutil"
+	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"honnef.co/go/js/dom"
 )
@@ -202,11 +204,8 @@ func updateSelected(index int) {
 }
 
 func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, emojiID string) {
-	container := getAncestorByClassName(this, "comment-edit-container")
-	// HACK: Currently the child nodes are [text, div, text, div, text], but that isn't reliable.
-	editView := container.ChildNodes()[3].(dom.HTMLElement)
-	commentEditor := editView.QuerySelector(".comment-editor").(*dom.HTMLTextAreaElement)
-	reactableID := commentEditor.GetAttribute("data-reactableID")
+	container := getAncestorByClassName(this, "reactable-container")
+	reactableID := container.GetAttribute("data-reactableID")
 
 	if !rm.authenticatedUser {
 		rm.Show(this, event, reactableID)
@@ -230,19 +229,32 @@ func postReaction(emojiID string, reactableID string) error {
 		return err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
+	var reactions []reactions.Reaction
+	err = json.NewDecoder(resp.Body).Decode(&reactions)
 	if err != nil {
 		return err
 	}
 
-	switch resp.StatusCode {
-	case http.StatusOK:
-		reactionsContainer := document.GetElementByID(fmt.Sprintf("comment-%v-reactions-container", reactableID)).(dom.HTMLElement)
-		reactionsContainer.SetInnerHTML(string(body))
-		return nil
-	default:
-		return fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, string(body))
+	// TODO: Instead of trying to get and update the reactionsContainer in here,
+	//       return the results and the caller (that already has a reference to
+	//       reactionsContainer) do that. Use blocking code, not callbacks.
+	//       That way, no need for the "reactable-%s-container" element id.
+
+	// TODO: Dedup.
+	var l List
+	for _, r := range reactions {
+		l = append(l, Reaction{r})
 	}
+	l = append(l, NewReaction{ReactableID: reactableID})
+	body := htmlg.Render(l.Render()...)
+
+	reactionsContainer := document.GetElementByID(fmt.Sprintf("reactable-%s-container", reactableID)).(dom.HTMLElement)
+	reactionsContainer.SetInnerHTML(string(body))
+	return nil
 }
 
 func getAncestorByClassName(el dom.Element, class string) dom.Element {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
@@ -9,6 +10,42 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
+
+type Reactable struct {
+	ID      string
+	Content Component
+}
+
+func (r Reactable) Render() []*html.Node {
+	// TODO: Make this much nicer.
+	/*
+		<div id="reactable-{{.ID}}-container" class="reactable-container" data-reactableID="{{.ReactableID}}">
+			{{template "reactions" .Reactions}}{{template "new-reaction" .ID}}
+		</div>
+	*/
+	div := &html.Node{
+		Type: html.ElementNode, Data: atom.Div.String(),
+		Attr: []html.Attribute{
+			{Key: atom.Id.String(), Val: fmt.Sprintf("reactable-%s-container", r.ID)},
+			{Key: atom.Class.String(), Val: "reactable-container"},
+			{Key: "data-reactableID", Val: r.ID},
+		},
+	}
+	reactions, err := getReactions(r.ID) // TODO: Parallelize this for better performance.
+	if err != nil {
+		log.Println(err)
+	}
+	for _, r := range reactions {
+		for _, n := range (Reaction{r}).Render() {
+			div.AppendChild(n)
+		}
+	}
+	for _, n := range (NewReaction{ReactableID: r.ID}).Render() {
+		div.AppendChild(n)
+	}
+
+	return append(r.Content.Render(), div)
+}
 
 type Reaction struct {
 	reactions.Reaction
