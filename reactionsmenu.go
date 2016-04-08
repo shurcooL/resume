@@ -56,6 +56,11 @@ func (rm *ReactionsMenu) hide() {
 }
 
 type ReactionsMenu struct {
+	// TODO: Consider changing this to be the DOM element:
+	//
+	//       	container := getAncestorByClassName(this, "reactable-container")
+	//
+	//       So that the TODO below in postReaction can have a chance of being implemented.
 	reactableID string // reactableID from last Show.
 
 	menu    *dom.HTMLDivElement
@@ -222,9 +227,9 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 }
 
 func postReaction(emojiID string, reactableID string) error {
-	reactableURL := path.Join(dom.GetWindow().Location().Host, dom.GetWindow().Location().Pathname, reactableID)
+	reactableURL := path.Join(dom.GetWindow().Location().Host, dom.GetWindow().Location().Pathname)
 	reactableURL = strings.Replace(reactableURL, "localhost:8080", "dmitri.shuralyov.com", 1) // TEMP.
-	resp, err := http.PostForm("/react", url.Values{"reactableURL": {reactableURL}, "reaction": {emojiID}})
+	resp, err := http.PostForm("/react", url.Values{"reactableURL": {reactableURL}, "reactableID": {reactableID}, "reaction": {emojiID}})
 	if err != nil {
 		return err
 	}
@@ -243,8 +248,11 @@ func postReaction(emojiID string, reactableID string) error {
 	//       return the results and the caller (that already has a reference to
 	//       reactionsContainer) do that. Use blocking code, not callbacks.
 	//       That way, no need for the "reactable-%s-container" element id.
+	//       Ok, maybe this can't work because of a single ReactionsMenu being used
+	//       for everything, and it only has a reactableID to tell which reactionsContainer
+	//       to add to. Hmm, too bad, or is there still a chance?
 
-	// TODO: Dedup.
+	// TODO: Dedup. This is the inner part of Reactable component, straight up copy-pasted here.
 	var l List
 	for _, r := range reactions {
 		l = append(l, Reaction{r})

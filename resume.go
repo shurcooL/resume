@@ -13,7 +13,6 @@ import (
 	"net/url"
 	"path"
 	"strings"
-	"unicode"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
@@ -250,9 +249,9 @@ var education = Section{
 }
 
 func getReactions(id string) ([]reactions.Reaction, error) {
-	reactableURL := path.Join(dom.GetWindow().Location().Host, dom.GetWindow().Location().Pathname, id)
+	reactableURL := path.Join(dom.GetWindow().Location().Host, dom.GetWindow().Location().Pathname)
 	reactableURL = strings.Replace(reactableURL, "localhost:8080", "dmitri.shuralyov.com", 1) // TEMP.
-	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {reactableURL}}.Encode()}
+	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {reactableURL}, "reactableID": {id}}.Encode()}
 	resp, err := http.Get(u.String())
 	if err != nil {
 		return nil, err
@@ -271,27 +270,7 @@ func getReactions(id string) ([]reactions.Reaction, error) {
 }
 
 func reactable(id string, c Component) Component {
-	id = sanitize(strings.Replace(id, "/", "-", -1)) // TODO: Clean this up.
 	return Reactable{ID: id, Content: c}
-}
-
-// TODO: Clean this up.
-func sanitize(text string) string {
-	var anchorName []rune
-	var futureDash = false
-	for _, r := range []rune(text) {
-		switch {
-		case unicode.IsLetter(r) || unicode.IsNumber(r) || r == '.':
-			if futureDash && len(anchorName) > 0 {
-				anchorName = append(anchorName, '-')
-			}
-			futureDash = false
-			anchorName = append(anchorName, unicode.ToLower(r))
-		default:
-			futureDash = true
-		}
-	}
-	return string(anchorName)
 }
 
 func t() *template.Template {
