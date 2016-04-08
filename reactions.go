@@ -129,6 +129,7 @@ func (nr NewReaction) Render() []*html.Node {
 	a := &html.Node{
 		Type: html.ElementNode, Data: atom.A.String(),
 		Attr: []html.Attribute{
+			{Key: atom.Class.String(), Val: "new-reaction"},
 			{Key: atom.Href.String(), Val: "javascript:"},
 			{Key: atom.Title.String(), Val: "React"},
 			{Key: atom.Onclick.String(), Val: fmt.Sprintf("ShowReactionMenu(this, event, '%q');", nr.ReactableID)},

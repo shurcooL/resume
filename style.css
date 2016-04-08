@@ -162,6 +162,9 @@ div.others:hover {
 	border: 1px solid #92def9;
 }
 
+a.new-reaction {
+	vertical-align: top;
+}
 div.new-reaction {
 	cursor: pointer;
 	display: none;
