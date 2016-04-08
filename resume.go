@@ -11,14 +11,15 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"path"
-	"strings"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
 	"honnef.co/go/js/dom"
 )
+
+// THINK: Is it optimal to have this fixed here, rather than determining dynamically from address bar?
+const reactableURL = "dmitri.shuralyov.com/resume"
 
 var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
@@ -249,8 +250,6 @@ var education = Section{
 }
 
 func getReactions(id string) ([]reactions.Reaction, error) {
-	reactableURL := path.Join(dom.GetWindow().Location().Host, dom.GetWindow().Location().Pathname)
-	reactableURL = strings.Replace(reactableURL, "localhost:8080", "dmitri.shuralyov.com", 1) // TEMP.
 	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {reactableURL}, "reactableID": {id}}.Encode()}
 	resp, err := http.Get(u.String())
 	if err != nil {

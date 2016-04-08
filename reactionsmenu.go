@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"path"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -245,8 +244,6 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 }
 
 func postReaction(emojiID string, reactableID string) ([]reactions.Reaction, error) {
-	reactableURL := path.Join(dom.GetWindow().Location().Host, dom.GetWindow().Location().Pathname)
-	reactableURL = strings.Replace(reactableURL, "localhost:8080", "dmitri.shuralyov.com", 1) // TEMP.
 	resp, err := http.PostForm("/react", url.Values{"reactableURL": {reactableURL}, "reactableID": {reactableID}, "reaction": {emojiID}})
 	if err != nil {
 		return nil, err
