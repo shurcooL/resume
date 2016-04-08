@@ -70,6 +70,11 @@ type DmitriShuralyov struct {
 	AuthenticatedUser *users.User
 }
 
+// TODO: Move this and AuthenticatedUser out, into a separate struct dealing with these things.
+func (DmitriShuralyov) Return() template.URL {
+	return template.URL(dom.GetWindow().Location().Pathname)
+}
+
 func (DmitriShuralyov) Experience() Section { return experience }
 
 func (DmitriShuralyov) Projects() Section { return projects }
@@ -305,7 +310,7 @@ func t() *template.Template {
 			<a class="topbar-avatar" href="{{.HTMLURL}}" target="_blank" tabindex=-1
 				><img class="topbar-avatar" src="{{.AvatarURL}}" title="Signed in as {{.Login}}."
 			></a>
-			<form method="post" action="/logout" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign out"><input type="hidden" name="return" value="/"></form> {{/* TODO: Valid value for return. */}}
+			<form method="post" action="/logout" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign out"><input type="hidden" name="return" value="{{$.Return}}"></form>
 		</div>
 	{{end}}
 	<div class="name">Dmitri Shuralyov</div>
