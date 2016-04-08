@@ -19,14 +19,13 @@ type Reactable struct {
 func (r Reactable) Render() []*html.Node {
 	// TODO: Make this much nicer.
 	/*
-		<div id="reactable-{{.ID}}-container" class="reactable-container" data-reactableID="{{.ReactableID}}">
+		<div class="reactable-container" data-reactableID="{{.ReactableID}}">
 			{{template "reactions" .Reactions}}{{template "new-reaction" .ID}}
 		</div>
 	*/
 	div := &html.Node{
 		Type: html.ElementNode, Data: atom.Div.String(),
 		Attr: []html.Attribute{
-			{Key: atom.Id.String(), Val: fmt.Sprintf("reactable-%s-container", r.ID)},
 			{Key: atom.Class.String(), Val: "reactable-container"},
 			{Key: "data-reactableID", Val: r.ID},
 		},

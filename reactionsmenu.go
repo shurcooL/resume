@@ -23,6 +23,7 @@ var Reactions ReactionsMenu
 
 func (rm *ReactionsMenu) Show(this dom.HTMLElement, event dom.Event, reactableID string) {
 	rm.reactableID = reactableID
+	rm.reactableContainer = getAncestorByClassName(this, "reactable-container") // This requires NewReaction component to be inside reactable container.
 
 	rm.filter.Value = ""
 	rm.filter.Underlying().Call("dispatchEvent", js.Global.Get("CustomEvent").New("input")) // Trigger "input" event listeners.
@@ -56,12 +57,9 @@ func (rm *ReactionsMenu) hide() {
 }
 
 type ReactionsMenu struct {
-	// TODO: Consider changing this to be the DOM element:
-	//
-	//       	container := getAncestorByClassName(this, "reactable-container")
-	//
-	//       So that the TODO below in postReaction can have a chance of being implemented.
-	reactableID string // reactableID from last Show.
+	// From last Show, needed for postReaction when adding new reactions.
+	reactableID        string
+	reactableContainer dom.Element
 
 	menu    *dom.HTMLDivElement
 	filter  *dom.HTMLInputElement
@@ -116,11 +114,21 @@ func setupReactionsMenu(authenticatedUser bool) {
 		}
 		emojiID := filtered[i]
 		go func() {
-			err := postReaction(strings.Trim(emojiID, ":"), Reactions.reactableID)
+			reactions, err := postReaction(strings.Trim(emojiID, ":"), Reactions.reactableID)
 			if err != nil {
 				log.Println(err)
 				return
 			}
+
+			// TODO: Dedup. This is the inner part of Reactable component, straight up copy-pasted here.
+			var l List
+			for _, r := range reactions {
+				l = append(l, Reaction{r})
+			}
+			l = append(l, NewReaction{ReactableID: Reactions.reactableID})
+			body := htmlg.Render(l.Render()...)
+
+			Reactions.reactableContainer.SetInnerHTML(string(body))
 		}()
 		Reactions.hide()
 	})
@@ -218,51 +226,42 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 	}
 
 	go func() {
-		err := postReaction(emojiID, reactableID)
+		reactions, err := postReaction(emojiID, reactableID)
 		if err != nil {
 			log.Println(err)
 			return
 		}
+
+		// TODO: Dedup. This is the inner part of Reactable component, straight up copy-pasted here.
+		var l List
+		for _, r := range reactions {
+			l = append(l, Reaction{r})
+		}
+		l = append(l, NewReaction{ReactableID: reactableID})
+		body := htmlg.Render(l.Render()...)
+
+		container.SetInnerHTML(string(body))
 	}()
 }
 
-func postReaction(emojiID string, reactableID string) error {
+func postReaction(emojiID string, reactableID string) ([]reactions.Reaction, error) {
 	reactableURL := path.Join(dom.GetWindow().Location().Host, dom.GetWindow().Location().Pathname)
 	reactableURL = strings.Replace(reactableURL, "localhost:8080", "dmitri.shuralyov.com", 1) // TEMP.
 	resp, err := http.PostForm("/react", url.Values{"reactableURL": {reactableURL}, "reactableID": {reactableID}, "reaction": {emojiID}})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		body, _ := ioutil.ReadAll(resp.Body)
-		return fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
 	}
 	var reactions []reactions.Reaction
 	err = json.NewDecoder(resp.Body).Decode(&reactions)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	// TODO: Instead of trying to get and update the reactionsContainer in here,
-	//       return the results and the caller (that already has a reference to
-	//       reactionsContainer) do that. Use blocking code, not callbacks.
-	//       That way, no need for the "reactable-%s-container" element id.
-	//       Ok, maybe this can't work because of a single ReactionsMenu being used
-	//       for everything, and it only has a reactableID to tell which reactionsContainer
-	//       to add to. Hmm, too bad, or is there still a chance?
-
-	// TODO: Dedup. This is the inner part of Reactable component, straight up copy-pasted here.
-	var l List
-	for _, r := range reactions {
-		l = append(l, Reaction{r})
-	}
-	l = append(l, NewReaction{ReactableID: reactableID})
-	body := htmlg.Render(l.Render()...)
-
-	reactionsContainer := document.GetElementByID(fmt.Sprintf("reactable-%s-container", reactableID)).(dom.HTMLElement)
-	reactionsContainer.SetInnerHTML(string(body))
-	return nil
+	return reactions, nil
 }
 
 func getAncestorByClassName(el dom.Element, class string) dom.Element {
