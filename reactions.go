@@ -33,6 +33,7 @@ func (r Reactable) Render() []*html.Node {
 	reactions, err := getReactions(r.ID) // TODO: Parallelize this for better performance.
 	if err != nil {
 		log.Println(err)
+		reactions = nil
 	}
 	for _, r := range reactions {
 		for _, n := range (Reaction{r}).Render() {

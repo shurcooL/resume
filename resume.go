@@ -267,10 +267,7 @@ func getReactions(id string) ([]reactions.Reaction, error) {
 	}
 	var reactions []reactions.Reaction
 	err = json.NewDecoder(resp.Body).Decode(&reactions)
-	if err != nil {
-		return nil, err
-	}
-	return reactions, nil
+	return reactions, err
 }
 
 func reactable(id string, c Component) Component {

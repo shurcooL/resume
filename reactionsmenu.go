@@ -255,10 +255,7 @@ func postReaction(emojiID string, reactableID string) ([]reactions.Reaction, err
 	}
 	var reactions []reactions.Reaction
 	err = json.NewDecoder(resp.Body).Decode(&reactions)
-	if err != nil {
-		return nil, err
-	}
-	return reactions, nil
+	return reactions, err
 }
 
 func getAncestorByClassName(el dom.Element, class string) dom.Element {
