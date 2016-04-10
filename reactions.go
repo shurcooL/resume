@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
@@ -138,6 +142,37 @@ func (nr NewReaction) Render() []*html.Node {
 	}
 	a.AppendChild(div)
 	return []*html.Node{a}
+}
+
+func getReactions(id string) ([]reactions.Reaction, error) {
+	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {reactableURL}, "reactableID": {id}}.Encode()}
+	resp, err := http.Get(u.String())
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
+	var reactions []reactions.Reaction
+	err = json.NewDecoder(resp.Body).Decode(&reactions)
+	return reactions, err
+}
+
+func postReaction(emojiID string, reactableID string) ([]reactions.Reaction, error) {
+	resp, err := http.PostForm("/react", url.Values{"reactableURL": {reactableURL}, "reactableID": {reactableID}, "reaction": {emojiID}})
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
+	var reactions []reactions.Reaction
+	err = json.NewDecoder(resp.Body).Decode(&reactions)
+	return reactions, err
 }
 
 var currentUser *users.User // TODO, THINK, HACK.

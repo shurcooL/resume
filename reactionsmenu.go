@@ -3,12 +3,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -241,21 +237,6 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 
 		container.SetInnerHTML(string(body))
 	}()
-}
-
-func postReaction(emojiID string, reactableID string) ([]reactions.Reaction, error) {
-	resp, err := http.PostForm("/react", url.Values{"reactableURL": {reactableURL}, "reactableID": {reactableID}, "reaction": {emojiID}})
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
-	}
-	var reactions []reactions.Reaction
-	err = json.NewDecoder(resp.Body).Decode(&reactions)
-	return reactions, err
 }
 
 func getAncestorByClassName(el dom.Element, class string) dom.Element {

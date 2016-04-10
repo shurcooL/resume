@@ -4,31 +4,21 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
-	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
 
 	"github.com/shurcooL/htmlg"
-	"github.com/shurcooL/reactions"
-	"github.com/shurcooL/users"
 	"honnef.co/go/js/dom"
 )
 
-// THINK: Is it optimal to have this fixed here, rather than determining dynamically from address bar?
 const reactableURL = "dmitri.shuralyov.com/resume"
 
 var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
 func main() {
-	// TODO: Make this better/more reliable.
 	document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
 		go setup()
 	})
-	//go setup()
 }
 
 func setup() {
@@ -39,7 +29,7 @@ func setup() {
 	currentUser = authenticatedUser // THINK, HACK.
 
 	var buf bytes.Buffer
-	err = t().ExecuteTemplate(&buf, "body", DmitriShuralyov{AuthenticatedUser: authenticatedUser})
+	err = t().ExecuteTemplate(&buf, "body", DmitriShuralyov{Auth: Auth{AuthenticatedUser: authenticatedUser}})
 	if err != nil {
 		panic(err)
 	}
@@ -48,31 +38,8 @@ func setup() {
 	setupReactionsMenu(authenticatedUser != nil)
 }
 
-func getAuthenticatedUser() (*users.User, error) {
-	resp, err := http.Get("/user")
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
-	}
-	var u = new(users.User)
-	err = json.NewDecoder(resp.Body).Decode(&u)
-	if err != nil {
-		return nil, err
-	}
-	return u, nil
-}
-
 type DmitriShuralyov struct {
-	AuthenticatedUser *users.User
-}
-
-// TODO: Move this and AuthenticatedUser out, into a separate struct dealing with these things.
-func (DmitriShuralyov) Return() template.URL {
-	return template.URL(dom.GetWindow().Location().Pathname)
+	Auth
 }
 
 func (DmitriShuralyov) Experience() Section { return experience }
@@ -207,23 +174,23 @@ var skills = Section{
 		{
 			Title: "Languages and APIs",
 			Lines: []Component{
-				reactable("Go", Text("Go")),
-				reactable("C/C++", fade("C/C++")),
-				reactable("Java", fade("Java")),
-				reactable("C#", fade("C#")),
-				reactable("OpenGL", Text("OpenGL")),
-				reactable("SQL", fade("SQL")),
+				Reactable{ID: "Go", Content: Text("Go")},
+				Reactable{ID: "C/C++", Content: fade("C/C++")},
+				Reactable{ID: "Java", Content: fade("Java")},
+				Reactable{ID: "C#", Content: fade("C#")},
+				Reactable{ID: "OpenGL", Content: Text("OpenGL")},
+				Reactable{ID: "SQL", Content: fade("SQL")},
 			},
 		},
 		{
 			Title: "Software",
 			Lines: []Component{
-				reactable("OS X", Text("OS X")),
-				reactable("Linux", Text("Linux")),
-				reactable("Windows", Text("Windows")),
-				reactable("git", Text("git")),
-				reactable("Visual Studio", Text("Visual Studio")),
-				reactable("Xcode", Text("Xcode")),
+				Reactable{ID: "OS X", Content: Text("OS X")},
+				Reactable{ID: "Linux", Content: Text("Linux")},
+				Reactable{ID: "Windows", Content: Text("Windows")},
+				Reactable{ID: "git", Content: Text("git")},
+				Reactable{ID: "Visual Studio", Content: Text("Visual Studio")},
+				Reactable{ID: "Xcode", Content: Text("Xcode")},
 			},
 		},
 	},
@@ -252,26 +219,6 @@ var education = Section{
 			},
 		},
 	},
-}
-
-func getReactions(id string) ([]reactions.Reaction, error) {
-	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {reactableURL}, "reactableID": {id}}.Encode()}
-	resp, err := http.Get(u.String())
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
-	}
-	var reactions []reactions.Reaction
-	err = json.NewDecoder(resp.Body).Decode(&reactions)
-	return reactions, err
-}
-
-func reactable(id string, c Component) Component {
-	return Reactable{ID: id, Content: c}
 }
 
 func t() *template.Template {
