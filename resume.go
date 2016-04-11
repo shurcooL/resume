@@ -11,8 +11,6 @@ import (
 	"honnef.co/go/js/dom"
 )
 
-const reactableURL = "dmitri.shuralyov.com/resume"
-
 var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
 func main() {

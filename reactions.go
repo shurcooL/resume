@@ -15,6 +15,8 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+const reactableURL = "dmitri.shuralyov.com/resume"
+
 type Reactable struct {
 	ID      string
 	Content Component
