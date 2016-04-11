@@ -1,4 +1,4 @@
-package main
+package resume
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
-const reactableURL = "dmitri.shuralyov.com/resume"
+const ReactableURL = "dmitri.shuralyov.com/resume"
 
 type Reactable struct {
 	ID      string
@@ -147,7 +147,7 @@ func (nr NewReaction) Render() []*html.Node {
 }
 
 func getReactions(id string) ([]reactions.Reaction, error) {
-	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {reactableURL}, "reactableID": {id}}.Encode()}
+	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {ReactableURL}, "reactableID": {id}}.Encode()}
 	resp, err := http.Get(u.String())
 	if err != nil {
 		return nil, err
@@ -162,30 +162,15 @@ func getReactions(id string) ([]reactions.Reaction, error) {
 	return reactions, err
 }
 
-func postReaction(emojiID string, reactableID string) ([]reactions.Reaction, error) {
-	resp, err := http.PostForm("/react", url.Values{"reactableURL": {reactableURL}, "reactableID": {reactableID}, "reaction": {emojiID}})
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
-	}
-	var reactions []reactions.Reaction
-	err = json.NewDecoder(resp.Body).Decode(&reactions)
-	return reactions, err
-}
-
-var currentUser *users.User // TODO, THINK, HACK.
+var CurrentUser *users.User // TODO, THINK, HACK.
 
 // THINK.
 func containsCurrentUser(users []users.User) bool {
-	if currentUser == nil {
+	if CurrentUser == nil {
 		return false
 	}
 	for _, u := range users {
-		if u.ID == currentUser.ID {
+		if u.ID == CurrentUser.ID {
 			return true
 		}
 	}
@@ -202,7 +187,7 @@ func reactionTooltip(reaction reactions.Reaction) string {
 				users += " and "
 			}
 		}
-		if currentUser != nil && u.ID == currentUser.ID {
+		if CurrentUser != nil && u.ID == CurrentUser.ID {
 			if i == 0 {
 				users += "You"
 			} else {

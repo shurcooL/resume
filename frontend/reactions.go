@@ -3,14 +3,19 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/shurcooL/go/gopherjs_http/jsutil"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
+	"github.com/shurcooL/resume"
 	"honnef.co/go/js/dom"
 )
 
@@ -116,11 +121,11 @@ func setupReactionsMenu(authenticatedUser bool) {
 			}
 
 			// TODO: Dedup. This is the inner part of Reactable component, straight up copy-pasted here.
-			var l List
+			var l resume.List
 			for _, r := range reactions {
-				l = append(l, Reaction{r})
+				l = append(l, resume.Reaction{r})
 			}
-			l = append(l, NewReaction{ReactableID: Reactions.reactableID})
+			l = append(l, resume.NewReaction{ReactableID: Reactions.reactableID})
 			body := htmlg.Render(l.Render()...)
 
 			Reactions.reactableContainer.SetInnerHTML(string(body))
@@ -228,15 +233,30 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 		}
 
 		// TODO: Dedup. This is the inner part of Reactable component, straight up copy-pasted here.
-		var l List
+		var l resume.List
 		for _, r := range reactions {
-			l = append(l, Reaction{r})
+			l = append(l, resume.Reaction{r})
 		}
-		l = append(l, NewReaction{ReactableID: reactableID})
+		l = append(l, resume.NewReaction{ReactableID: reactableID})
 		body := htmlg.Render(l.Render()...)
 
 		container.SetInnerHTML(string(body))
 	}()
+}
+
+func postReaction(emojiID string, reactableID string) ([]reactions.Reaction, error) {
+	resp, err := http.PostForm("/react", url.Values{"reactableURL": {resume.ReactableURL}, "reactableID": {reactableID}, "reaction": {emojiID}})
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
+	var reactions []reactions.Reaction
+	err = json.NewDecoder(resp.Body).Decode(&reactions)
+	return reactions, err
 }
 
 func getAncestorByClassName(el dom.Element, class string) dom.Element {

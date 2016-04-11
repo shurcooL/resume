@@ -1,44 +1,12 @@
-// +build js
-
-package main
+package resume
 
 import (
-	"bytes"
 	"html/template"
-	"log"
 
 	"github.com/shurcooL/htmlg"
-	"honnef.co/go/js/dom"
 )
 
-var document = dom.GetWindow().Document().(dom.HTMLDocument)
-
-func main() {
-	document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
-		go setup()
-	})
-}
-
-func setup() {
-	authenticatedUser, err := getAuthenticatedUser()
-	if err != nil {
-		log.Println(err)
-	}
-	currentUser = authenticatedUser // THINK, HACK.
-
-	var buf bytes.Buffer
-	err = t().ExecuteTemplate(&buf, "body", DmitriShuralyov{Auth: Auth{AuthenticatedUser: authenticatedUser}})
-	if err != nil {
-		panic(err)
-	}
-	document.Body().SetInnerHTML(buf.String())
-
-	setupReactionsMenu(authenticatedUser != nil)
-}
-
-type DmitriShuralyov struct {
-	Auth
-}
+type DmitriShuralyov struct{}
 
 func (DmitriShuralyov) Experience() Section { return experience }
 
@@ -219,7 +187,7 @@ var education = Section{
 	},
 }
 
-func t() *template.Template {
+func T() *template.Template {
 	return template.Must(template.New("").Funcs(template.FuncMap{
 		"render": func(c Component) template.HTML { return htmlg.Render(c.Render()...) },
 	}).Parse(`
@@ -247,14 +215,6 @@ func t() *template.Template {
 {{end}}
 
 {{define "body"}}
-	{{with .AuthenticatedUser}}
-		<div style="text-align: right; margin-bottom: 20px; height: 18px; font-size: 12px;">
-			<a class="topbar-avatar" href="{{.HTMLURL}}" target="_blank" tabindex=-1
-				><img class="topbar-avatar" src="{{.AvatarURL}}" title="Signed in as {{.Login}}."
-			></a>
-			<form method="post" action="/logout" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign out"><input type="hidden" name="return" value="{{$.Return}}"></form>
-		</div>
-	{{end}}
 	<div class="name">Dmitri Shuralyov</div>
 	<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
 	<div class="corediv">
