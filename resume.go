@@ -149,12 +149,12 @@ func (DmitriShuralyov) Skills() Section {
 			{
 				Title: "Software",
 				Lines: []Component{
+					Reactable{ID: "Git", Content: Text("Git")},
+					Reactable{ID: "Xcode", Content: Text("Xcode")},
+					Reactable{ID: "Visual Studio", Content: Text("Visual Studio")},
 					Reactable{ID: "OS X", Content: Text("OS X")},
 					Reactable{ID: "Linux", Content: Text("Linux")},
 					Reactable{ID: "Windows", Content: Text("Windows")},
-					Reactable{ID: "git", Content: Text("git")},
-					Reactable{ID: "Visual Studio", Content: Text("Visual Studio")},
-					Reactable{ID: "Xcode", Content: Text("Xcode")},
 				},
 			},
 		},
