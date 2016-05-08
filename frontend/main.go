@@ -55,7 +55,7 @@ func setup() {
 }
 
 func getAuthenticatedUser() (*users.User, error) {
-	resp, err := http.Get("/user")
+	resp, err := http.Get("/api/user")
 	if err != nil {
 		return nil, err
 	}
