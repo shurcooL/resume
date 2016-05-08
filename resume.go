@@ -188,10 +188,9 @@ func (DmitriShuralyov) Education() Section {
 	}
 }
 
-func T() *template.Template {
-	return template.Must(template.New("").Funcs(template.FuncMap{
-		"render": func(c Component) template.HTML { return htmlg.Render(c.Render()...) },
-	}).Parse(`
+var T = template.Must(template.New("").Funcs(template.FuncMap{
+	"render": func(c Component) template.HTML { return htmlg.Render(c.Render()...) },
+}).Parse(`
 {{define "section"}}
 	<div class="sectionheader">{{.Title}}</div>
 	{{range .Items}}
@@ -226,4 +225,3 @@ func T() *template.Template {
 	</div>
 {{end}}
 `))
-}

@@ -21,9 +21,16 @@ import (
 var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
 func main() {
-	document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
-		go setup()
-	})
+	switch readyState := document.ReadyState(); readyState {
+	case "loading":
+		document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
+			go setup()
+		})
+	case "interactive", "complete":
+		setup()
+	default:
+		panic(fmt.Errorf("internal error: unexpected document.ReadyState value: %v", readyState))
+	}
 }
 
 func setup() {
@@ -34,11 +41,11 @@ func setup() {
 	resume.CurrentUser = authenticatedUser // THINK, HACK.
 
 	var buf bytes.Buffer
-	err = t().Execute(&buf, Header{AuthenticatedUser: authenticatedUser})
+	err = t.Execute(&buf, Header{AuthenticatedUser: authenticatedUser})
 	if err != nil {
 		panic(err)
 	}
-	err = resume.T().ExecuteTemplate(&buf, "body", resume.DmitriShuralyov{})
+	err = resume.T.ExecuteTemplate(&buf, "body", resume.DmitriShuralyov{})
 	if err != nil {
 		panic(err)
 	}
@@ -73,8 +80,7 @@ func (Header) Return() template.URL {
 	return template.URL(dom.GetWindow().Location().Pathname)
 }
 
-func t() *template.Template {
-	return template.Must(template.New("").Parse(`
+var t = template.Must(template.New("").Parse(`
 {{with .AuthenticatedUser}}
 	<div style="text-align: right; margin-bottom: 20px; height: 18px; font-size: 12px;">
 		<a class="topbar-avatar" href="{{.HTMLURL}}" target="_blank" tabindex=-1
@@ -84,4 +90,3 @@ func t() *template.Template {
 	</div>
 {{end}}
 `))
-}
