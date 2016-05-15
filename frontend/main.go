@@ -51,29 +51,29 @@ func setup() {
 	}
 	document.Body().SetInnerHTML(buf.String())
 
-	setupReactionsMenu(authenticatedUser != nil)
+	setupReactionsMenu(authenticatedUser.ID != 0)
 }
 
-func getAuthenticatedUser() (*users.User, error) {
+func getAuthenticatedUser() (users.User, error) {
 	resp, err := http.Get("/api/user")
 	if err != nil {
-		return nil, err
+		return users.User{}, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		body, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+		return users.User{}, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
 	}
-	var u = new(users.User)
+	var u users.User
 	err = json.NewDecoder(resp.Body).Decode(&u)
 	if err != nil {
-		return nil, err
+		return users.User{}, err
 	}
 	return u, nil
 }
 
 type Header struct {
-	AuthenticatedUser *users.User
+	AuthenticatedUser users.User
 }
 
 func (Header) Return() template.URL {
@@ -81,12 +81,12 @@ func (Header) Return() template.URL {
 }
 
 var t = template.Must(template.New("").Parse(`
-{{with .AuthenticatedUser}}
+{{if .AuthenticatedUser.ID}}{{with .AuthenticatedUser}}
 	<div style="text-align: right; margin-bottom: 20px; height: 18px; font-size: 12px;">
 		<a class="topbar-avatar" href="{{.HTMLURL}}" target="_blank" tabindex=-1
 			><img class="topbar-avatar" src="{{.AvatarURL}}" title="Signed in as {{.Login}}."
 		></a>
 		<form method="post" action="/logout" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign out"><input type="hidden" name="return" value="{{$.Return}}"></form>
 	</div>
-{{end}}
+{{end}}{{end}}
 `))

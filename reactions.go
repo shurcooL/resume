@@ -162,11 +162,11 @@ func getReactions(id string) ([]reactions.Reaction, error) {
 	return reactions, err
 }
 
-var CurrentUser *users.User // TODO, THINK, HACK.
+var CurrentUser users.User // TODO, THINK, HACK.
 
 // THINK.
 func containsCurrentUser(users []users.User) bool {
-	if CurrentUser == nil {
+	if CurrentUser.ID == 0 {
 		return false
 	}
 	for _, u := range users {
@@ -187,7 +187,7 @@ func reactionTooltip(reaction reactions.Reaction) string {
 				users += " and "
 			}
 		}
-		if CurrentUser != nil && u.ID == CurrentUser.ID {
+		if CurrentUser.ID != 0 && u.ID == CurrentUser.ID {
 			if i == 0 {
 				users += "You"
 			} else {
