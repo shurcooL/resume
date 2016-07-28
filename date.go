@@ -38,14 +38,14 @@ func (p Present) Render() []*html.Node {
 	return Text("Present").Render()
 }
 
-type Dater interface {
+type DateComponent interface {
 	Date() (year int, month time.Month)
 	Component
 }
 
 // DateRange represents a span of time between two dates.
 type DateRange struct {
-	From, To Dater
+	From, To DateComponent
 }
 
 func (dr DateRange) Render() []*html.Node {
@@ -56,7 +56,7 @@ func (dr DateRange) Render() []*html.Node {
 }
 
 // yearsMonths describes the length of a date range in the number of years and months.
-func yearsMonths(from, to Dater) string {
+func yearsMonths(from, to DateComponent) string {
 	y0, m0 := from.Date()
 	y1, m1 := to.Date()
 	months := (y1-y0)*12 + int(m1) - int(m0)
