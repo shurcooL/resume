@@ -8,128 +8,8 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
-type Section struct {
-	Title string
-	Items []Item
-}
-
-func (s Section) Render() []*html.Node {
-	// TODO: Make this much nicer.
-	/*
-		<div class="sectionheader">{{.Title}}</div>
-		{{range .Items}}
-			{{if not .WIP}}
-				{{render .}}
-			{{end}}
-		{{end}}
-	*/
-	var ns []*html.Node
-	ns = append(ns, htmlg.DivClass("sectionheader", htmlg.Text(s.Title)))
-	for _, i := range s.Items {
-		if i.WIP {
-			continue
-		}
-		for _, n := range i.Render() {
-			ns = append(ns, n)
-		}
-	}
-	return ns
-}
-
-type Item struct {
-	Title    string
-	Subtitle string
-	Dates    Component
-	Lines    []Component
-
-	WIP bool
-}
-
-func (i Item) Render() []*html.Node {
-	// TODO: Make this much nicer.
-	/*
-		<div class="item{{if .WIP}} wip{{end}}">
-			<div class="itemheader">
-				<div class="title">{{.Title}}</div>
-				{{with .Subtitle}}<div class="subtitle">{{.}}</div>{{end}}
-				{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
-			</div>
-			<ul>
-				{{range .Lines}}<li>{{render .}}</li>
-				{{end}}
-			</ul>
-		</div>
-	*/
-	itemClass := "item"
-	if i.WIP {
-		itemClass += " wip"
-	}
-	item := htmlg.DivClass(itemClass)
-
-	itemHeader := htmlg.DivClass("itemheader")
-	itemHeader.AppendChild(htmlg.DivClass("title", htmlg.Text(i.Title)))
-	if i.Subtitle != "" {
-		itemHeader.AppendChild(htmlg.DivClass("subtitle", htmlg.Text(i.Subtitle)))
-	}
-	if i.Dates != nil {
-		itemHeader.AppendChild(htmlg.DivClass("dates", i.Dates.Render()...))
-	}
-	item.AppendChild(itemHeader)
-
-	ul := &html.Node{Type: html.ElementNode, Data: atom.Ul.String()}
-	for _, l := range i.Lines {
-		li := &html.Node{Type: html.ElementNode, Data: atom.Li.String()}
-		for _, n := range l.Render() {
-			li.AppendChild(n)
-		}
-		ul.AppendChild(li)
-	}
-	item.AppendChild(ul)
-
-	return []*html.Node{item}
-}
-
 // DmitriShuralyov is a person whose resume is on display.
 type DmitriShuralyov struct{}
-
-func (ds DmitriShuralyov) Render() []*html.Node {
-	// TODO: Make this much nicer. Less verbose, more readable, more flexible. Maybe like JSX.
-	/*
-		<div class="name">Dmitri Shuralyov</div>
-		<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
-		<div class="core">
-			{{render .Experience}}
-			{{render .Projects}}
-			{{render .Skills}}
-			{{render .Education}}
-		</div>
-	*/
-	var ns []*html.Node
-	ns = append(ns, htmlg.DivClass("name", htmlg.Text("Dmitri Shuralyov")))
-	contactInfo := htmlg.DivClass("contactinfo",
-		htmlg.A("github.com/shurcooL", template.URL("https://github.com/shurcooL")),
-		htmlg.Text(" · "),
-		htmlg.A("shurcooL@gmail.com", template.URL("mailto:shurcooL@gmail.com")),
-	)
-	contactInfo.FirstChild.Attr = append(contactInfo.FirstChild.Attr, html.Attribute{Key: atom.Target.String(), Val: "_blank"})
-	contactInfo.LastChild.Attr = append(contactInfo.LastChild.Attr, html.Attribute{Key: atom.Target.String(), Val: "_blank"})
-	ns = append(ns, contactInfo)
-	core := htmlg.DivClass("core")
-	for _, n := range ds.Experience().Render() {
-		core.AppendChild(n)
-	}
-	for _, n := range ds.Projects().Render() {
-		core.AppendChild(n)
-	}
-	for _, n := range ds.Skills().Render() {
-		core.AppendChild(n)
-	}
-	for _, n := range ds.Education().Render() {
-		core.AppendChild(n)
-	}
-	ns = append(ns, core)
-	return ns
-}
 
 func (DmitriShuralyov) Experience() Section {
 	return Section{
@@ -294,4 +174,124 @@ func (DmitriShuralyov) Education() Section {
 			},
 		},
 	}
+}
+
+func (ds DmitriShuralyov) Render() []*html.Node {
+	// TODO: Make this much nicer. Less verbose, more readable, more flexible. Maybe like JSX.
+	/*
+		<div class="name">Dmitri Shuralyov</div>
+		<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
+		<div class="core">
+			{{render .Experience}}
+			{{render .Projects}}
+			{{render .Skills}}
+			{{render .Education}}
+		</div>
+	*/
+	var ns []*html.Node
+	ns = append(ns, htmlg.DivClass("name", htmlg.Text("Dmitri Shuralyov")))
+	contactInfo := htmlg.DivClass("contactinfo",
+		htmlg.A("github.com/shurcooL", template.URL("https://github.com/shurcooL")),
+		htmlg.Text(" · "),
+		htmlg.A("shurcooL@gmail.com", template.URL("mailto:shurcooL@gmail.com")),
+	)
+	contactInfo.FirstChild.Attr = append(contactInfo.FirstChild.Attr, html.Attribute{Key: atom.Target.String(), Val: "_blank"})
+	contactInfo.LastChild.Attr = append(contactInfo.LastChild.Attr, html.Attribute{Key: atom.Target.String(), Val: "_blank"})
+	ns = append(ns, contactInfo)
+	core := htmlg.DivClass("core")
+	for _, n := range ds.Experience().Render() {
+		core.AppendChild(n)
+	}
+	for _, n := range ds.Projects().Render() {
+		core.AppendChild(n)
+	}
+	for _, n := range ds.Skills().Render() {
+		core.AppendChild(n)
+	}
+	for _, n := range ds.Education().Render() {
+		core.AppendChild(n)
+	}
+	ns = append(ns, core)
+	return ns
+}
+
+type Section struct {
+	Title string
+	Items []Item
+}
+
+func (s Section) Render() []*html.Node {
+	// TODO: Make this much nicer.
+	/*
+		<div class="sectionheader">{{.Title}}</div>
+		{{range .Items}}
+			{{if not .WIP}}
+				{{render .}}
+			{{end}}
+		{{end}}
+	*/
+	var ns []*html.Node
+	ns = append(ns, htmlg.DivClass("sectionheader", htmlg.Text(s.Title)))
+	for _, i := range s.Items {
+		if i.WIP {
+			continue
+		}
+		for _, n := range i.Render() {
+			ns = append(ns, n)
+		}
+	}
+	return ns
+}
+
+type Item struct {
+	Title    string
+	Subtitle string
+	Dates    Component
+	Lines    []Component
+
+	WIP bool
+}
+
+func (i Item) Render() []*html.Node {
+	// TODO: Make this much nicer.
+	/*
+		<div class="item{{if .WIP}} wip{{end}}">
+			<div class="itemheader">
+				<div class="title">{{.Title}}</div>
+				{{with .Subtitle}}<div class="subtitle">{{.}}</div>{{end}}
+				{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
+			</div>
+			<ul>
+				{{range .Lines}}<li>{{render .}}</li>
+				{{end}}
+			</ul>
+		</div>
+	*/
+	itemClass := "item"
+	if i.WIP {
+		itemClass += " wip"
+	}
+	item := htmlg.DivClass(itemClass)
+
+	itemHeader := htmlg.DivClass("itemheader")
+	itemHeader.AppendChild(htmlg.DivClass("title", htmlg.Text(i.Title)))
+	if i.Subtitle != "" {
+		itemHeader.AppendChild(htmlg.DivClass("subtitle", htmlg.Text(i.Subtitle)))
+	}
+	if i.Dates != nil {
+		itemHeader.AppendChild(htmlg.DivClass("dates", i.Dates.Render()...))
+	}
+	item.AppendChild(itemHeader)
+
+	ul := &html.Node{Type: html.ElementNode, Data: atom.Ul.String()}
+	for _, l := range i.Lines {
+		li := &html.Node{Type: html.ElementNode, Data: atom.Li.String()}
+		for _, n := range l.Render() {
+			li.AppendChild(n)
+		}
+		ul.AppendChild(li)
+	}
+	item.AppendChild(ul)
+
+	return []*html.Node{item}
 }
