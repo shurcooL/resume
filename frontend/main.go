@@ -9,10 +9,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 
+	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/resume"
 	"github.com/shurcooL/users"
 	"honnef.co/go/js/dom"
@@ -45,10 +47,7 @@ func setup() {
 	if err != nil {
 		panic(err)
 	}
-	err = resume.T.ExecuteTemplate(&buf, "body", resume.DmitriShuralyov{})
-	if err != nil {
-		panic(err)
-	}
+	io.WriteString(&buf, string(htmlg.Render(resume.DmitriShuralyov{}.Render()...)))
 	document.Body().SetInnerHTML(buf.String())
 
 	setupReactionsMenu(authenticatedUser.ID != 0)

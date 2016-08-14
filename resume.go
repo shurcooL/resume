@@ -92,6 +92,45 @@ func (i Item) Render() []*html.Node {
 // DmitriShuralyov is a person whose resume is on display.
 type DmitriShuralyov struct{}
 
+func (ds DmitriShuralyov) Render() []*html.Node {
+	// TODO: Make this much nicer. Less verbose, more readable, more flexible. Maybe like JSX.
+	/*
+		<div class="name">Dmitri Shuralyov</div>
+		<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
+		<div class="core">
+			{{render .Experience}}
+			{{render .Projects}}
+			{{render .Skills}}
+			{{render .Education}}
+		</div>
+	*/
+	var ns []*html.Node
+	ns = append(ns, htmlg.DivClass("name", htmlg.Text("Dmitri Shuralyov")))
+	contactInfo := htmlg.DivClass("contactinfo",
+		htmlg.A("github.com/shurcooL", template.URL("https://github.com/shurcooL")),
+		htmlg.Text(" · "),
+		htmlg.A("shurcooL@gmail.com", template.URL("mailto:shurcooL@gmail.com")),
+	)
+	contactInfo.FirstChild.Attr = append(contactInfo.FirstChild.Attr, html.Attribute{Key: atom.Target.String(), Val: "_blank"})
+	contactInfo.LastChild.Attr = append(contactInfo.LastChild.Attr, html.Attribute{Key: atom.Target.String(), Val: "_blank"})
+	ns = append(ns, contactInfo)
+	core := htmlg.DivClass("core")
+	for _, n := range ds.Experience().Render() {
+		core.AppendChild(n)
+	}
+	for _, n := range ds.Projects().Render() {
+		core.AppendChild(n)
+	}
+	for _, n := range ds.Skills().Render() {
+		core.AppendChild(n)
+	}
+	for _, n := range ds.Education().Render() {
+		core.AppendChild(n)
+	}
+	ns = append(ns, core)
+	return ns
+}
+
 func (DmitriShuralyov) Experience() Section {
 	return Section{
 		Title: "Experience",
@@ -256,18 +295,3 @@ func (DmitriShuralyov) Education() Section {
 		},
 	}
 }
-
-var T = template.Must(template.New("").Funcs(template.FuncMap{
-	"render": func(c Component) template.HTML { return htmlg.Render(c.Render()...) },
-}).Parse(`
-{{define "body"}}
-	<div class="name">Dmitri Shuralyov</div>
-	<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
-	<div class="corediv">
-		{{render .Experience}}
-		{{render .Projects}}
-		{{render .Skills}}
-		{{render .Education}}
-	</div>
-{{end}}
-`))
