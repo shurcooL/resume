@@ -4,6 +4,8 @@ import (
 	"html/template"
 
 	"github.com/shurcooL/htmlg"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 type Section struct {
@@ -18,6 +20,50 @@ type Item struct {
 	Lines    []Component
 
 	WIP bool
+}
+
+func (i Item) Render() []*html.Node {
+	// TODO: Make this much nicer.
+	/*
+		<div class="item{{if .WIP}} wip{{end}}">
+			<div class="itemheader">
+				<div class="title">{{.Title}}</div>
+				{{with .Subtitle}}<div class="subtitle">{{.}}</div>{{end}}
+				{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
+			</div>
+			<ul>
+				{{range .Lines}}<li>{{render .}}</li>
+				{{end}}
+			</ul>
+		</div>
+	*/
+	itemClass := "item"
+	if i.WIP {
+		itemClass += " wip"
+	}
+	item := htmlg.DivClass(itemClass)
+
+	itemHeader := htmlg.DivClass("itemheader")
+	itemHeader.AppendChild(htmlg.DivClass("title", htmlg.Text(i.Title)))
+	if i.Subtitle != "" {
+		itemHeader.AppendChild(htmlg.DivClass("subtitle", htmlg.Text(i.Subtitle)))
+	}
+	if i.Dates != nil {
+		itemHeader.AppendChild(htmlg.DivClass("dates", i.Dates.Render()...))
+	}
+	item.AppendChild(itemHeader)
+
+	ul := &html.Node{Type: html.ElementNode, Data: atom.Ul.String()}
+	for _, l := range i.Lines {
+		li := &html.Node{Type: html.ElementNode, Data: atom.Li.String()}
+		for _, n := range l.Render() {
+			li.AppendChild(n)
+		}
+		ul.AppendChild(li)
+	}
+	item.AppendChild(ul)
+
+	return []*html.Node{item}
 }
 
 // DmitriShuralyov is a person whose resume is on display.
@@ -195,23 +241,9 @@ var T = template.Must(template.New("").Funcs(template.FuncMap{
 	<div class="sectionheader">{{.Title}}</div>
 	{{range .Items}}
 		{{if not .WIP}}
-			{{template "item" .}}
+			{{render .}}
 		{{end}}
 	{{end}}
-{{end}}
-
-{{define "item"}}
-<div class="item{{if .WIP}} wip{{end}}">
-	<div class="itemheader">
-		<div class="title">{{.Title}}</div>
-		{{with .Subtitle}}<div class="subtitle">{{.}}</div>{{end}}
-		{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
-	</div>
-	<ul>
-		{{range .Lines}}<li>{{render .}}</li>
-		{{end}}
-	</ul>
-</div>
 {{end}}
 
 {{define "body"}}
