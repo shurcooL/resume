@@ -13,6 +13,29 @@ type Section struct {
 	Items []Item
 }
 
+func (s Section) Render() []*html.Node {
+	// TODO: Make this much nicer.
+	/*
+		<div class="sectionheader">{{.Title}}</div>
+		{{range .Items}}
+			{{if not .WIP}}
+				{{render .}}
+			{{end}}
+		{{end}}
+	*/
+	var ns []*html.Node
+	ns = append(ns, htmlg.DivClass("sectionheader", htmlg.Text(s.Title)))
+	for _, i := range s.Items {
+		if i.WIP {
+			continue
+		}
+		for _, n := range i.Render() {
+			ns = append(ns, n)
+		}
+	}
+	return ns
+}
+
 type Item struct {
 	Title    string
 	Subtitle string
@@ -237,23 +260,14 @@ func (DmitriShuralyov) Education() Section {
 var T = template.Must(template.New("").Funcs(template.FuncMap{
 	"render": func(c Component) template.HTML { return htmlg.Render(c.Render()...) },
 }).Parse(`
-{{define "section"}}
-	<div class="sectionheader">{{.Title}}</div>
-	{{range .Items}}
-		{{if not .WIP}}
-			{{render .}}
-		{{end}}
-	{{end}}
-{{end}}
-
 {{define "body"}}
 	<div class="name">Dmitri Shuralyov</div>
 	<div class="contactinfo"><a href="https://github.com/shurcooL" target="_blank">github.com/shurcooL</a> &middot; <a href="mailto:shurcooL@gmail.com" target="_blank">shurcooL@gmail.com</a></div>
 	<div class="corediv">
-		{{template "section" .Experience}}
-		{{template "section" .Projects}}
-		{{template "section" .Skills}}
-		{{template "section" .Education}}
+		{{render .Experience}}
+		{{render .Projects}}
+		{{render .Skills}}
+		{{render .Education}}
 	</div>
 {{end}}
 `))
