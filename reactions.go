@@ -1,16 +1,13 @@
 package resume
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
+	"golang.org/x/net/context"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
@@ -36,7 +33,7 @@ func (r Reactable) Render() []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	reactions, err := getReactions(r.ID) // TODO: Parallelize this for better performance.
+	reactions, err := Reactions.Get(context.TODO(), ReactableURL, r.ID) // TODO: Parallelize this for better performance.
 	if err != nil {
 		log.Println(err)
 		reactions = nil
@@ -146,23 +143,8 @@ func (nr NewReaction) Render() []*html.Node {
 	return []*html.Node{a}
 }
 
-func getReactions(id string) ([]reactions.Reaction, error) {
-	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {ReactableURL}, "reactableID": {id}}.Encode()}
-	resp, err := http.Get(u.String())
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
-	}
-	var reactions []reactions.Reaction
-	err = json.NewDecoder(resp.Body).Decode(&reactions)
-	return reactions, err
-}
-
 var CurrentUser users.User // TODO, THINK, HACK.
+var Reactions reactions.Service
 
 // THINK.
 func containsCurrentUser(users []users.User) bool {

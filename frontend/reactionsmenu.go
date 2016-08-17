@@ -3,12 +3,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
@@ -16,6 +12,7 @@ import (
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/resume"
+	"golang.org/x/net/context"
 	"honnef.co/go/js/dom"
 )
 
@@ -63,7 +60,7 @@ func (rm *ReactionsMenu) hide() {
 }
 
 type ReactionsMenu struct {
-	// From last Show, needed for postReaction when adding new reactions.
+	// From last Show, needed for Reactions.Toggle() when adding new reactions.
 	reactableID        string
 	reactableContainer dom.Element
 
@@ -123,7 +120,7 @@ func setupReactionsMenu(authenticatedUser bool) {
 		}
 		emojiID := filtered[i]
 		go func() {
-			reactions, err := postReaction(strings.Trim(emojiID, ":"), Reactions.reactableID)
+			reactions, err := resume.Reactions.Toggle(context.TODO(), resume.ReactableURL, Reactions.reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(strings.Trim(emojiID, ":"))})
 			if err != nil {
 				log.Println(err)
 				return
@@ -238,7 +235,7 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 	}
 
 	go func() {
-		reactions, err := postReaction(emojiID, reactableID)
+		reactions, err := resume.Reactions.Toggle(context.TODO(), resume.ReactableURL, reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(emojiID)})
 		if err != nil {
 			log.Println(err)
 			return
@@ -254,21 +251,6 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 
 		container.SetInnerHTML(string(body))
 	}()
-}
-
-func postReaction(emojiID string, reactableID string) ([]reactions.Reaction, error) {
-	resp, err := http.PostForm("/react", url.Values{"reactableURL": {resume.ReactableURL}, "reactableID": {reactableID}, "reaction": {emojiID}})
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
-	}
-	var reactions []reactions.Reaction
-	err = json.NewDecoder(resp.Body).Decode(&reactions)
-	return reactions, err
 }
 
 func getAncestorByClassName(el dom.Element, class string) dom.Element {
