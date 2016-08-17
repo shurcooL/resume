@@ -47,16 +47,18 @@ func setup() {
 	resume.CurrentUser = authenticatedUser // THINK.
 	resume.Reactions = httpReactions{}     // THINK.
 
-	var buf bytes.Buffer
-	err = t.Execute(&buf, Header{AuthenticatedUser: authenticatedUser})
-	if err != nil {
-		panic(err)
+	if !document.Body().HasChildNodes() {
+		var buf bytes.Buffer
+		err = t.Execute(&buf, Header{AuthenticatedUser: authenticatedUser})
+		if err != nil {
+			panic(err)
+		}
+		_, err = io.WriteString(&buf, string(htmlg.Render(resume.DmitriShuralyov{}.Render()...)))
+		if err != nil {
+			panic(err)
+		}
+		document.Body().SetInnerHTML(buf.String())
 	}
-	_, err = io.WriteString(&buf, string(htmlg.Render(resume.DmitriShuralyov{}.Render()...)))
-	if err != nil {
-		panic(err)
-	}
-	document.Body().SetInnerHTML(buf.String())
 
 	setupReactionsMenu(authenticatedUser.ID != 0)
 }
