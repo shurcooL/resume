@@ -39,7 +39,7 @@ func main() {
 }
 
 func setup() {
-	authenticatedUser, err := getAuthenticatedUser()
+	authenticatedUser, err := httpUsers{}.GetAuthenticated(context.TODO())
 	if err != nil {
 		log.Println(err)
 	}
@@ -63,25 +63,6 @@ func setup() {
 	setupReactionsMenu(authenticatedUser.ID != 0)
 }
 
-// TODO: Should this be a method of an HTTP users.Service implementation (similar to httpReactions)?
-func getAuthenticatedUser() (users.User, error) {
-	resp, err := http.Get("/api/user")
-	if err != nil {
-		return users.User{}, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
-		return users.User{}, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
-	}
-	var u users.User
-	err = json.NewDecoder(resp.Body).Decode(&u)
-	if err != nil {
-		return users.User{}, err
-	}
-	return u, nil
-}
-
 type Header struct {
 	AuthenticatedUser users.User
 }
@@ -102,14 +83,12 @@ var t = template.Must(template.New("").Parse(`
 `))
 
 // httpReactions implements reactions.Service remotely over HTTP.
-type httpReactions struct {
-	BaseURI string
-}
+type httpReactions struct{}
 
 // Get reactions for id at uri.
 // uri is clean '/'-separated URI. E.g., "example.com/page".
-func (hr httpReactions) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
-	u := url.URL{Path: hr.BaseURI + "/react", RawQuery: url.Values{"reactableURL": {uri}, "reactableID": {id}}.Encode()}
+func (httpReactions) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
+	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {uri}, "reactableID": {id}}.Encode()}
 	resp, err := http.Get(u.String())
 	if err != nil {
 		return nil, err
@@ -125,8 +104,8 @@ func (hr httpReactions) Get(ctx context.Context, uri string, id string) ([]react
 }
 
 // Toggle a reaction for id at uri.
-func (hr httpReactions) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
-	resp, err := http.PostForm(hr.BaseURI+"/react", url.Values{"reactableURL": {uri}, "reactableID": {id}, "reaction": {string(tr.Reaction)}})
+func (httpReactions) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
+	resp, err := http.PostForm("/react", url.Values{"reactableURL": {uri}, "reactableID": {id}, "reaction": {string(tr.Reaction)}})
 	if err != nil {
 		return nil, err
 	}
@@ -138,4 +117,40 @@ func (hr httpReactions) Toggle(ctx context.Context, uri string, id string, tr re
 	var rs []reactions.Reaction
 	err = json.NewDecoder(resp.Body).Decode(&rs)
 	return rs, err
+}
+
+// httpUsers implements users.Service remotely over HTTP.
+type httpUsers struct{}
+
+// GetAuthenticated fetches the currently authenticated user,
+// or User{UserSpec: UserSpec{ID: 0}} if there is no authenticated user.
+func (httpUsers) GetAuthenticated(ctx context.Context) (users.User, error) {
+	resp, err := http.Get("/api/user")
+	if err != nil {
+		return users.User{}, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return users.User{}, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
+	var u users.User
+	err = json.NewDecoder(resp.Body).Decode(&u)
+	return u, err
+}
+
+// GetAuthenticatedSpec fetches the currently authenticated user specification,
+// or UserSpec{ID: 0} if there is no authenticated user.
+func (httpUsers) GetAuthenticatedSpec(ctx context.Context) (users.UserSpec, error) {
+	return users.UserSpec{}, fmt.Errorf("GetAuthenticatedSpec: not implemented")
+}
+
+// Get fetches the specified user.
+func (httpUsers) Get(ctx context.Context, user users.UserSpec) (users.User, error) {
+	return users.User{}, fmt.Errorf("Get: not implemented")
+}
+
+// Edit the authenticated user.
+func (httpUsers) Edit(ctx context.Context, er users.EditRequest) (users.User, error) {
+	return users.User{}, fmt.Errorf("Edit: not implemented")
 }
