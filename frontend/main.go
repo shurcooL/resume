@@ -88,7 +88,7 @@ type httpReactions struct{}
 // Get reactions for id at uri.
 // uri is clean '/'-separated URI. E.g., "example.com/page".
 func (httpReactions) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
-	u := url.URL{Path: "/react", RawQuery: url.Values{"reactableURL": {uri}, "reactableID": {id}}.Encode()}
+	u := url.URL{Path: "/api/react", RawQuery: url.Values{"reactableURL": {uri}, "reactableID": {id}}.Encode()}
 	resp, err := http.Get(u.String())
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func (httpReactions) Get(ctx context.Context, uri string, id string) ([]reaction
 
 // Toggle a reaction for id at uri.
 func (httpReactions) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
-	resp, err := http.PostForm("/react", url.Values{"reactableURL": {uri}, "reactableID": {id}, "reaction": {string(tr.Reaction)}})
+	resp, err := http.PostForm("/api/react", url.Values{"reactableURL": {uri}, "reactableID": {id}, "reaction": {string(tr.Reaction)}})
 	if err != nil {
 		return nil, err
 	}
