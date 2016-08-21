@@ -66,8 +66,6 @@ func setup() {
 // httpReactions implements reactions.Service remotely over HTTP.
 type httpReactions struct{}
 
-// Get reactions for id at uri.
-// uri is clean '/'-separated URI. E.g., "example.com/page".
 func (httpReactions) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
 	u := url.URL{Path: "/api/react", RawQuery: url.Values{"reactableURL": {uri}, "reactableID": {id}}.Encode()}
 	resp, err := http.Get(u.String())
@@ -83,8 +81,6 @@ func (httpReactions) Get(ctx context.Context, uri string, id string) ([]reaction
 	err = json.NewDecoder(resp.Body).Decode(&rs)
 	return rs, err
 }
-
-// Toggle a reaction for id at uri.
 func (httpReactions) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
 	resp, err := http.PostForm("/api/react", url.Values{"reactableURL": {uri}, "reactableID": {id}, "reaction": {string(tr.Reaction)}})
 	if err != nil {
@@ -103,8 +99,6 @@ func (httpReactions) Toggle(ctx context.Context, uri string, id string, tr react
 // httpUsers implements users.Service remotely over HTTP.
 type httpUsers struct{}
 
-// GetAuthenticated fetches the currently authenticated user,
-// or User{UserSpec: UserSpec{ID: 0}} if there is no authenticated user.
 func (httpUsers) GetAuthenticated(ctx context.Context) (users.User, error) {
 	resp, err := http.Get("/api/user")
 	if err != nil {
@@ -119,19 +113,12 @@ func (httpUsers) GetAuthenticated(ctx context.Context) (users.User, error) {
 	err = json.NewDecoder(resp.Body).Decode(&u)
 	return u, err
 }
-
-// GetAuthenticatedSpec fetches the currently authenticated user specification,
-// or UserSpec{ID: 0} if there is no authenticated user.
 func (httpUsers) GetAuthenticatedSpec(ctx context.Context) (users.UserSpec, error) {
 	return users.UserSpec{}, fmt.Errorf("GetAuthenticatedSpec: not implemented")
 }
-
-// Get fetches the specified user.
 func (httpUsers) Get(ctx context.Context, user users.UserSpec) (users.User, error) {
 	return users.User{}, fmt.Errorf("Get: not implemented")
 }
-
-// Edit the authenticated user.
 func (httpUsers) Edit(ctx context.Context, er users.EditRequest) (users.User, error) {
 	return users.User{}, fmt.Errorf("Edit: not implemented")
 }
