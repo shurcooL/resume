@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
@@ -49,9 +48,10 @@ func setup() {
 
 	if !document.Body().HasChildNodes() {
 		var buf bytes.Buffer
-		err = t.Execute(&buf, Header{AuthenticatedUser: authenticatedUser})
+		returnURL := dom.GetWindow().Location().Pathname
+		_, err = io.WriteString(&buf, string(htmlg.Render(resume.Header{ReturnURL: returnURL}.Render()...)))
 		if err != nil {
-			panic(err)
+			panic(err) // TODO.
 		}
 		_, err = io.WriteString(&buf, string(htmlg.Render(resume.DmitriShuralyov{}.Render()...)))
 		if err != nil {
@@ -62,25 +62,6 @@ func setup() {
 
 	setupReactionsMenu(authenticatedUser.ID != 0)
 }
-
-type Header struct {
-	AuthenticatedUser users.User
-}
-
-func (Header) Return() template.URL {
-	return template.URL(dom.GetWindow().Location().Pathname)
-}
-
-var t = template.Must(template.New("").Parse(`
-{{- if .AuthenticatedUser.ID}}{{with .AuthenticatedUser}}
-	<div style="text-align: right; margin-bottom: 20px; height: 18px; font-size: 12px;">
-		<a class="topbar-avatar" href="{{.HTMLURL}}" target="_blank" tabindex=-1
-			><img class="topbar-avatar" src="{{.AvatarURL}}" title="Signed in as {{.Login}}."
-		></a>
-		<form method="post" action="/logout" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign out"><input type="hidden" name="return" value="{{$.Return}}"></form>
-	</div>
-{{end}}{{end -}}
-`))
 
 // httpReactions implements reactions.Service remotely over HTTP.
 type httpReactions struct{}
