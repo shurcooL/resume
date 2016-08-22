@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,7 +19,6 @@ import (
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/resume"
 	"github.com/shurcooL/users"
-	"golang.org/x/net/context"
 	"honnef.co/go/js/dom"
 )
 

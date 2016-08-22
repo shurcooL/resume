@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
@@ -12,7 +13,6 @@ import (
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/resume"
-	"golang.org/x/net/context"
 	"honnef.co/go/js/dom"
 )
 

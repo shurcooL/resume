@@ -1,13 +1,13 @@
 package resume
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
-	"golang.org/x/net/context"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
