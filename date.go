@@ -49,7 +49,7 @@ type DateRange struct {
 }
 
 func (dr DateRange) Render() []*html.Node {
-	span := htmlg.Span(List{dr.From, Text(" - "), dr.To}.Render()...)
+	span := htmlg.Span(List{dr.From, Text("–"), dr.To}.Render()...)
 	//span.Attr = append(span.Attr, html.Attribute{Key: atom.Title.String(), Val: yearsMonths(dr.From, dr.To)})
 	Attribute{Key: atom.Title.String(), Val: yearsMonths(dr.From, dr.To)}.Apply(span)
 	return []*html.Node{span}
