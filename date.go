@@ -20,7 +20,7 @@ func (d Date) Date() (year int, month time.Month) { return d.Year, d.Month }
 func (d Date) Render() []*html.Node {
 	switch d.Month {
 	case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12:
-		return Text(fmt.Sprintf("%02d/%d", d.Month, d.Year)).Render()
+		return Text(fmt.Sprintf("%d/%02d", d.Year, d.Month)).Render()
 	default:
 		return Text(fmt.Sprintf("%d", d.Year)).Render()
 	}

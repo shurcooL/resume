@@ -21,7 +21,7 @@ func ExampleDate() {
 	}
 
 	// Output:
-	// 06/2015
+	// 2015/06
 	// 2008
 	// Present
 }
@@ -32,7 +32,7 @@ func ExampleDateRange() {
 	}
 	render(dr)
 
-	// Output: <span title="2 years, 4 months">02/2010 - 06/2012</span>
+	// Output: <span title="2 years, 4 months">2010/02 - 2012/06</span>
 }
 
 func render(c Component) { fmt.Println(htmlg.Render(c.Render()...)) }
