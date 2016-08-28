@@ -45,7 +45,7 @@ func (DmitriShuralyov) Experience() Section {
 			{
 				Title: "Toolmaker",
 				Dates: DateRange{
-					From: Date{Year: 2012}, To: Date{Year: 2013, Month: 6},
+					From: Date{Year: 2011, Month: 12}, To: Date{Year: 2013, Month: 6},
 				},
 				Lines: []Component{
 					Text("Researched and implemented experimental software development tools."),
