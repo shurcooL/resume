@@ -2,6 +2,7 @@ package resume
 
 import (
 	"html/template"
+	"time"
 
 	"github.com/shurcooL/htmlg"
 	"golang.org/x/net/html"
@@ -20,7 +21,7 @@ func (DmitriShuralyov) Experience() Section {
 				Title:    "Senior Software Engineer, Full Stack",
 				Subtitle: "Sourcegraph",
 				Dates: DateRange{
-					From: Date{Year: 2015, Month: 4}, To: Present{},
+					From: Date{Year: 2015, Month: time.April}, To: Present{},
 				},
 				Lines: []Component{
 					Text("Implemented significant non-trivial pieces of core Sourcegraph functionality in Go, including backend language analysis enhancements, and frontend components and visualizations."),
@@ -33,7 +34,7 @@ func (DmitriShuralyov) Experience() Section {
 				Title:    "Senior Software Engineer, Backend",
 				Subtitle: "Triggit",
 				Dates: DateRange{
-					From: Date{Year: 2013, Month: 6}, To: Date{Year: 2015, Month: 3},
+					From: Date{Year: 2013, Month: time.June}, To: Date{Year: 2015, Month: time.March},
 				},
 				Lines: []Component{
 					Text("Built distributed low-latency web services and required components for processing hundreds of thousands of ad auction requests per second."),
@@ -45,7 +46,7 @@ func (DmitriShuralyov) Experience() Section {
 			{
 				Title: "Toolmaker",
 				Dates: DateRange{
-					From: Date{Year: 2011, Month: 12}, To: Date{Year: 2013, Month: 6},
+					From: Date{Year: 2011, Month: time.December}, To: Date{Year: 2013, Month: time.June},
 				},
 				Lines: []Component{
 					Text("Researched and implemented experimental software development tools."),
@@ -56,7 +57,7 @@ func (DmitriShuralyov) Experience() Section {
 				Title:    "Junior Application Programmer",
 				Subtitle: "CYSSC/MCYS, Ontario Public Service",
 				Dates: DateRange{
-					From: Date{Year: 2007, Month: 9}, To: Date{Year: 2008, Month: 8},
+					From: Date{Year: 2007, Month: time.September}, To: Date{Year: 2008, Month: time.August},
 				},
 				Lines: []Component{
 					Text("Designed, created and maintained a complex Java GUI application to aid the development and maintenance of large database applications."),
@@ -68,7 +69,7 @@ func (DmitriShuralyov) Experience() Section {
 				Title:    "Game Engine Engineer, Tools",
 				Subtitle: "Reverie World Studios",
 				Dates: DateRange{
-					From: Date{Year: 2007, Month: 1}, To: Date{Year: 2007, Month: 8},
+					From: Date{Year: 2007, Month: time.January}, To: Date{Year: 2007, Month: time.August},
 				},
 				Lines: []Component{
 					Text("Coordinated the development of an upgraded world editor in C# to help streamline content production."),

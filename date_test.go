@@ -2,13 +2,14 @@ package resume
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/shurcooL/htmlg"
 )
 
 func ExampleDate() {
 	{
-		d := Date{Year: 2015, Month: 6}
+		d := Date{Year: 2015, Month: time.June}
 		render(d)
 	}
 	{
@@ -28,7 +29,7 @@ func ExampleDate() {
 
 func ExampleDateRange() {
 	dr := DateRange{
-		From: Date{Year: 2010, Month: 2}, To: Date{Year: 2012, Month: 6},
+		From: Date{Year: 2010, Month: time.February}, To: Date{Year: 2012, Month: time.June},
 	}
 	render(dr)
 
@@ -38,10 +39,10 @@ func ExampleDateRange() {
 func render(c Component) { fmt.Println(htmlg.Render(c.Render()...)) }
 
 func ExampleDateRange_yearsMonths() {
-	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2010, Month: 2}))
-	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2010, Month: 8}))
-	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2011, Month: 2}))
-	fmt.Println(yearsMonths(Date{Year: 2010, Month: 2}, Date{Year: 2012, Month: 6}))
+	fmt.Println(yearsMonths(Date{Year: 2010, Month: time.February}, Date{Year: 2010, Month: time.February}))
+	fmt.Println(yearsMonths(Date{Year: 2010, Month: time.February}, Date{Year: 2010, Month: time.August}))
+	fmt.Println(yearsMonths(Date{Year: 2010, Month: time.February}, Date{Year: 2011, Month: time.February}))
+	fmt.Println(yearsMonths(Date{Year: 2010, Month: time.February}, Date{Year: 2012, Month: time.June}))
 
 	// Output:
 	// 0 months
