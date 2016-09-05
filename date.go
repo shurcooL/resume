@@ -50,8 +50,15 @@ type DateRange struct {
 
 func (dr DateRange) Render() []*html.Node {
 	span := htmlg.Span(List{dr.From, Text("–"), dr.To}.Render()...)
-	//span.Attr = append(span.Attr, html.Attribute{Key: atom.Title.String(), Val: yearsMonths(dr.From, dr.To)})
-	Attribute{Key: atom.Title.String(), Val: yearsMonths(dr.From, dr.To)}.Apply(span)
+
+	// Compute the years and months between From and To dates,
+	// and set that as the tooltip of DateRange.
+	tooltip := yearsMonths(dr.From, dr.To)
+	span.Attr = append(span.Attr, html.Attribute{
+		Key: atom.Title.String(),
+		Val: tooltip,
+	})
+
 	return []*html.Node{span}
 }
 
