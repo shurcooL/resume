@@ -1,7 +1,5 @@
-// +build js
-
 // frontend renders the resume entirely on the frontend.
-// It is a Go package meant to be compiled with GopherJS.
+// It is a Go package meant to be compiled with GOARCH=js.
 package main
 
 import (
