@@ -13,6 +13,7 @@ import (
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/resume"
+	"github.com/shurcooL/users"
 	"honnef.co/go/js/dom"
 )
 
@@ -48,7 +49,7 @@ func (rm *ReactionsMenu) Show(this dom.HTMLElement, event dom.Event, reactableID
 		left = minLeft
 	}
 	rm.menu.Style().SetProperty("left", fmt.Sprintf("%vpx", left), "")
-	if rm.authenticatedUser {
+	if rm.authenticatedUser.ID != 0 {
 		rm.filter.Focus()
 	}
 
@@ -61,7 +62,7 @@ func (rm *ReactionsMenu) hide() {
 
 type ReactionsMenu struct {
 	reactionsService  reactions.Service
-	authenticatedUser bool
+	authenticatedUser users.User
 
 	menu    *dom.HTMLDivElement
 	filter  *dom.HTMLInputElement
@@ -73,7 +74,7 @@ type ReactionsMenu struct {
 }
 
 // setupReactionsMenu has to be called when document.Body() already exists.
-func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser bool) {
+func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser users.User) {
 	js.Global.Set("ShowReactionMenu", jsutil.Wrap(Reactions.Show))
 	js.Global.Set("ToggleReaction", jsutil.Wrap(Reactions.ToggleReaction))
 
@@ -88,7 +89,7 @@ func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser bo
 	Reactions.menu.AppendChild(container)
 
 	// Disable for unauthenticated user.
-	if !Reactions.authenticatedUser {
+	if Reactions.authenticatedUser.ID == 0 {
 		disabled := document.CreateElement("div").(*dom.HTMLDivElement)
 		disabled.SetClass("rm-reactions-menu-disabled")
 		signIn := document.CreateElement("div").(*dom.HTMLDivElement)
@@ -103,7 +104,7 @@ func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser bo
 	Reactions.filter.SetClass("rm-reactions-filter")
 	Reactions.filter.Placeholder = "Search"
 	Reactions.menu.AddEventListener("click", false, func(event dom.Event) {
-		if Reactions.authenticatedUser {
+		if Reactions.authenticatedUser.ID != 0 {
 			Reactions.filter.Focus()
 		}
 	})
@@ -131,8 +132,8 @@ func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser bo
 
 			// TODO: Dedup. This is the inner HTML of Reactable component, straight up copy-pasted here.
 			var l resume.List
-			for _, r := range reactions {
-				l = append(l, resume.Reaction{r})
+			for _, reaction := range reactions {
+				l = append(l, resume.Reaction{Reaction: reaction})
 			}
 			l = append(l, resume.NewReaction{ReactableID: Reactions.reactableID})
 			body := htmlg.Render(l.Render()...)
@@ -232,7 +233,7 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 	container := getAncestorByClassName(this, "reactable-container")
 	reactableID := container.GetAttribute("data-reactableID")
 
-	if !rm.authenticatedUser {
+	if rm.authenticatedUser.ID == 0 {
 		rm.Show(this, event, reactableID)
 		return
 	}
@@ -246,8 +247,8 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 
 		// TODO: Dedup. This is the inner HTML of Reactable component, straight up copy-pasted here.
 		var l resume.List
-		for _, r := range reactions {
-			l = append(l, resume.Reaction{r})
+		for _, reaction := range reactions {
+			l = append(l, resume.Reaction{Reaction: reaction})
 		}
 		l = append(l, resume.NewReaction{ReactableID: reactableID})
 		body := htmlg.Render(l.Render()...)

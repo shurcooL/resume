@@ -55,7 +55,7 @@ func setup() {
 		document.Body().SetInnerHTML(buf.String())
 	}
 
-	setupReactionsMenu(reactionsService, authenticatedUser.ID != 0)
+	setupReactionsMenu(reactionsService, authenticatedUser)
 }
 
 // httpReactions implements reactions.Service remotely over HTTP.

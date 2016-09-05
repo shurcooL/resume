@@ -48,8 +48,8 @@ func (r Reactable) Render() []*html.Node {
 		log.Println(err)
 		reactions = nil
 	}
-	for _, r := range reactions {
-		for _, n := range (Reaction{r}).Render() {
+	for _, reaction := range reactions {
+		for _, n := range (Reaction{reaction: reaction}).Render() {
 			div.AppendChild(n)
 		}
 	}
@@ -62,7 +62,7 @@ func (r Reactable) Render() []*html.Node {
 
 // Reaction is a component for displaying a single reaction.
 type Reaction struct {
-	reactions.Reaction
+	Reaction reactions.Reaction
 }
 
 // THINK: Should I work really hard (and add verbosity) to eliminate this package-level variable,
