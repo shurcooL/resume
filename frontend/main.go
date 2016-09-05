@@ -9,13 +9,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 
-	"github.com/shurcooL/htmlg"
+	"github.com/shurcooL/notifications"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/resume"
 	"github.com/shurcooL/users"
@@ -38,29 +37,25 @@ func main() {
 }
 
 func setup() {
+	reactionsService := httpReactions{}
 	authenticatedUser, err := httpUsers{}.GetAuthenticated(context.TODO())
 	if err != nil {
 		log.Println(err)
+		authenticatedUser = users.User{} // THINK: Should it be a fatal error or not? What about on frontend vs backend?
 	}
-
-	resume.CurrentUser = authenticatedUser // THINK.
-	resume.Reactions = httpReactions{}     // THINK.
 
 	if !document.Body().HasChildNodes() {
 		var buf bytes.Buffer
-		returnURL := dom.GetWindow().Location().Pathname
-		_, err = io.WriteString(&buf, string(htmlg.Render(resume.Header{ReturnURL: returnURL}.Render()...)))
+		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
+		err = resume.RenderBodyInnerHTML(context.TODO(), &buf, reactionsService, httpNotifications{}, authenticatedUser, returnURL)
 		if err != nil {
-			panic(err) // TODO.
-		}
-		_, err = io.WriteString(&buf, string(htmlg.Render(resume.DmitriShuralyov{}.Render()...)))
-		if err != nil {
-			panic(err)
+			log.Println(err)
+			return
 		}
 		document.Body().SetInnerHTML(buf.String())
 	}
 
-	setupReactionsMenu(authenticatedUser.ID != 0)
+	setupReactionsMenu(reactionsService, authenticatedUser.ID != 0)
 }
 
 // httpReactions implements reactions.Service remotely over HTTP.

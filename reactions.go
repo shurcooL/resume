@@ -12,12 +12,22 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+// ReactableURL is the URL for reactionable items on this resume.
 const ReactableURL = "dmitri.shuralyov.com/resume"
 
+// Reactable is a wrapper component for any Content that can be reacted to.
+// ID is the reactable ID.
 type Reactable struct {
 	ID      string
 	Content Component
 }
+
+// THINK: Should I work really hard (and add verbosity) to eliminate this package-level variable,
+//        or is it okay to keep it this way?
+
+// reactableReactionsService is a reactions.Service used by Reactable.Render().
+// It's set before the Reactable components are rendered, and not modified during rendering.
+var reactableReactionsService reactions.Service
 
 func (r Reactable) Render() []*html.Node {
 	// TODO: Make this much nicer.
@@ -33,7 +43,7 @@ func (r Reactable) Render() []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	reactions, err := Reactions.Get(context.TODO(), ReactableURL, r.ID) // TODO: Parallelize this for better performance.
+	reactions, err := reactableReactionsService.Get(context.TODO(), ReactableURL, r.ID) // TODO: Parallelize this for better performance.
 	if err != nil {
 		log.Println(err)
 		reactions = nil
@@ -50,9 +60,17 @@ func (r Reactable) Render() []*html.Node {
 	return append(r.Content.Render(), div)
 }
 
+// Reaction is a component for displaying a single reaction.
 type Reaction struct {
 	reactions.Reaction
 }
+
+// THINK: Should I work really hard (and add verbosity) to eliminate this package-level variable,
+//        or is it okay to keep it this way?
+
+// reactionCurrentUser is the current user used by Reaction.Render().
+// It's set before the Reaction components are rendered, and not modified during rendering.
+var reactionCurrentUser users.User
 
 func (r Reaction) Render() []*html.Node {
 	// TODO: Make this much nicer.
@@ -81,7 +99,7 @@ func (r Reaction) Render() []*html.Node {
 	outerSpan.AppendChild(innerSpan)
 	b := htmlg.Strong(fmt.Sprint(len(r.Reaction.Users)))
 	divClass := "reaction"
-	if !containsCurrentUser(r.Reaction.Users) {
+	if !r.containsCurrentUser(r.Reaction.Users) {
 		divClass += " others"
 	}
 	div := &html.Node{
@@ -95,7 +113,7 @@ func (r Reaction) Render() []*html.Node {
 		Attr: []html.Attribute{
 			{Key: atom.Class.String(), Val: "reaction"},
 			{Key: atom.Href.String(), Val: "javascript:"},
-			{Key: atom.Title.String(), Val: reactionTooltip(r.Reaction)},
+			{Key: atom.Title.String(), Val: r.reactionTooltip(r.Reaction)},
 			{Key: atom.Onclick.String(), Val: fmt.Sprintf("ToggleReaction(this, event, '%q');", r.Reaction.Reaction)},
 		},
 	}
@@ -103,6 +121,43 @@ func (r Reaction) Render() []*html.Node {
 	return []*html.Node{a}
 }
 
+// THINK.
+func (Reaction) containsCurrentUser(users []users.User) bool {
+	if reactionCurrentUser.ID == 0 {
+		return false
+	}
+	for _, u := range users {
+		if u.ID == reactionCurrentUser.ID {
+			return true
+		}
+	}
+	return false
+}
+
+func (Reaction) reactionTooltip(reaction reactions.Reaction) string {
+	var users string
+	for i, u := range reaction.Users {
+		if i != 0 {
+			if i < len(reaction.Users)-1 {
+				users += ", "
+			} else {
+				users += " and "
+			}
+		}
+		if reactionCurrentUser.ID != 0 && u.ID == reactionCurrentUser.ID {
+			if i == 0 {
+				users += "You"
+			} else {
+				users += "you"
+			}
+		} else {
+			users += u.Login
+		}
+	}
+	return fmt.Sprintf("%v reacted with :%v:.", users, reaction.Reaction)
+}
+
+// NewReaction is a component for adding new reactions to a Reactable with ReactableID id.
 type NewReaction struct {
 	ReactableID string
 }
@@ -141,43 +196,4 @@ func (nr NewReaction) Render() []*html.Node {
 	}
 	a.AppendChild(div)
 	return []*html.Node{a}
-}
-
-var CurrentUser users.User // TODO, THINK, HACK.
-var Reactions reactions.Service
-
-// THINK.
-func containsCurrentUser(users []users.User) bool {
-	if CurrentUser.ID == 0 {
-		return false
-	}
-	for _, u := range users {
-		if u.ID == CurrentUser.ID {
-			return true
-		}
-	}
-	return false
-}
-
-func reactionTooltip(reaction reactions.Reaction) string {
-	var users string
-	for i, u := range reaction.Users {
-		if i != 0 {
-			if i < len(reaction.Users)-1 {
-				users += ", "
-			} else {
-				users += " and "
-			}
-		}
-		if CurrentUser.ID != 0 && u.ID == CurrentUser.ID {
-			if i == 0 {
-				users += "You"
-			} else {
-				users += "you"
-			}
-		} else {
-			users += u.Login
-		}
-	}
-	return fmt.Sprintf("%v reacted with :%v:.", users, reaction.Reaction)
 }

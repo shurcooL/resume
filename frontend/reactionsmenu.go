@@ -60,22 +60,24 @@ func (rm *ReactionsMenu) hide() {
 }
 
 type ReactionsMenu struct {
-	// From last Show, needed for Reactions.Toggle() when adding new reactions.
-	reactableID        string
-	reactableContainer dom.Element
+	reactionsService  reactions.Service
+	authenticatedUser bool
 
 	menu    *dom.HTMLDivElement
 	filter  *dom.HTMLInputElement
 	results *dom.HTMLDivElement
 
-	authenticatedUser bool
+	// From last Show, needed to rerender reactableContainer after toggling a reaction.
+	reactableID        string
+	reactableContainer dom.Element
 }
 
 // setupReactionsMenu has to be called when document.Body() already exists.
-func setupReactionsMenu(authenticatedUser bool) {
+func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser bool) {
 	js.Global.Set("ShowReactionMenu", jsutil.Wrap(Reactions.Show))
 	js.Global.Set("ToggleReaction", jsutil.Wrap(Reactions.ToggleReaction))
 
+	Reactions.reactionsService = reactionsService
 	Reactions.authenticatedUser = authenticatedUser
 
 	Reactions.menu = document.CreateElement("div").(*dom.HTMLDivElement)
@@ -91,7 +93,8 @@ func setupReactionsMenu(authenticatedUser bool) {
 		disabled.SetClass("rm-reactions-menu-disabled")
 		signIn := document.CreateElement("div").(*dom.HTMLDivElement)
 		signIn.SetClass("rm-reactions-menu-signin")
-		signIn.SetInnerHTML(fmt.Sprintf(`<form method="post" action="/login/github" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign in via GitHub"><input type="hidden" name="return" value="%s"></form> to react.`, dom.GetWindow().Location().Pathname))
+		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
+		signIn.SetInnerHTML(htmlg.RenderComponentsString(resume.PostButton{Action: "/login/github", Text: "Sign in via GitHub", ReturnURL: returnURL}, resume.Text(" to react.")))
 		disabled.AppendChild(signIn)
 		container.AppendChild(disabled)
 	}
@@ -120,13 +123,13 @@ func setupReactionsMenu(authenticatedUser bool) {
 		}
 		emojiID := filtered[i]
 		go func() {
-			reactions, err := resume.Reactions.Toggle(context.TODO(), resume.ReactableURL, Reactions.reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(strings.Trim(emojiID, ":"))})
+			reactions, err := Reactions.reactionsService.Toggle(context.TODO(), resume.ReactableURL, Reactions.reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(strings.Trim(emojiID, ":"))})
 			if err != nil {
 				log.Println(err)
 				return
 			}
 
-			// TODO: Dedup. This is the inner part of Reactable component, straight up copy-pasted here.
+			// TODO: Dedup. This is the inner HTML of Reactable component, straight up copy-pasted here.
 			var l resume.List
 			for _, r := range reactions {
 				l = append(l, resume.Reaction{r})
@@ -235,13 +238,13 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 	}
 
 	go func() {
-		reactions, err := resume.Reactions.Toggle(context.TODO(), resume.ReactableURL, reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(emojiID)})
+		reactions, err := rm.reactionsService.Toggle(context.TODO(), resume.ReactableURL, reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(emojiID)})
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		// TODO: Dedup. This is the inner part of Reactable component, straight up copy-pasted here.
+		// TODO: Dedup. This is the inner HTML of Reactable component, straight up copy-pasted here.
 		var l resume.List
 		for _, r := range reactions {
 			l = append(l, resume.Reaction{r})
