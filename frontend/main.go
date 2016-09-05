@@ -66,7 +66,9 @@ func setup() {
 // httpReactions implements reactions.Service remotely over HTTP.
 type httpReactions struct{}
 
-func (httpReactions) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
+var _ reactions.Service = httpReactions{}
+
+func (httpReactions) Get(_ context.Context, uri string, id string) ([]reactions.Reaction, error) {
 	u := url.URL{Path: "/api/react", RawQuery: url.Values{"reactableURL": {uri}, "reactableID": {id}}.Encode()}
 	resp, err := http.Get(u.String())
 	if err != nil {
@@ -81,7 +83,7 @@ func (httpReactions) Get(ctx context.Context, uri string, id string) ([]reaction
 	err = json.NewDecoder(resp.Body).Decode(&rs)
 	return rs, err
 }
-func (httpReactions) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
+func (httpReactions) Toggle(_ context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
 	resp, err := http.PostForm("/api/react", url.Values{"reactableURL": {uri}, "reactableID": {id}, "reaction": {string(tr.Reaction)}})
 	if err != nil {
 		return nil, err
@@ -99,7 +101,9 @@ func (httpReactions) Toggle(ctx context.Context, uri string, id string, tr react
 // httpUsers implements users.Service remotely over HTTP.
 type httpUsers struct{}
 
-func (httpUsers) GetAuthenticated(ctx context.Context) (users.User, error) {
+var _ users.Service = httpUsers{}
+
+func (httpUsers) GetAuthenticated(_ context.Context) (users.User, error) {
 	resp, err := http.Get("/api/user")
 	if err != nil {
 		return users.User{}, err
@@ -113,12 +117,23 @@ func (httpUsers) GetAuthenticated(ctx context.Context) (users.User, error) {
 	err = json.NewDecoder(resp.Body).Decode(&u)
 	return u, err
 }
-func (httpUsers) GetAuthenticatedSpec(ctx context.Context) (users.UserSpec, error) {
-	return users.UserSpec{}, fmt.Errorf("GetAuthenticatedSpec: not implemented")
+func (httpUsers) GetAuthenticatedSpec(_ context.Context) (users.UserSpec, error) {
+	resp, err := http.Get("/api/userspec")
+	if err != nil {
+		return users.UserSpec{}, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return users.UserSpec{}, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
+	var us users.UserSpec
+	err = json.NewDecoder(resp.Body).Decode(&us)
+	return us, err
 }
-func (httpUsers) Get(ctx context.Context, user users.UserSpec) (users.User, error) {
+func (httpUsers) Get(_ context.Context, user users.UserSpec) (users.User, error) {
 	return users.User{}, fmt.Errorf("Get: not implemented")
 }
-func (httpUsers) Edit(ctx context.Context, er users.EditRequest) (users.User, error) {
+func (httpUsers) Edit(_ context.Context, er users.EditRequest) (users.User, error) {
 	return users.User{}, fmt.Errorf("Edit: not implemented")
 }
