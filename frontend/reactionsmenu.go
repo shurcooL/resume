@@ -133,7 +133,7 @@ func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser us
 			// TODO: Dedup. This is the inner HTML of Reactable component, straight up copy-pasted here.
 			var l resume.List
 			for _, reaction := range reactions {
-				l = append(l, resume.Reaction{Reaction: reaction})
+				l = append(l, resume.Reaction{Reaction: reaction, CurrentUser: Reactions.authenticatedUser})
 			}
 			l = append(l, resume.NewReaction{ReactableID: Reactions.reactableID})
 			body := htmlg.Render(l.Render()...)
@@ -248,7 +248,7 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 		// TODO: Dedup. This is the inner HTML of Reactable component, straight up copy-pasted here.
 		var l resume.List
 		for _, reaction := range reactions {
-			l = append(l, resume.Reaction{Reaction: reaction})
+			l = append(l, resume.Reaction{Reaction: reaction, CurrentUser: rm.authenticatedUser})
 		}
 		l = append(l, resume.NewReaction{ReactableID: reactableID})
 		body := htmlg.Render(l.Render()...)

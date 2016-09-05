@@ -5,12 +5,17 @@ import (
 	"time"
 
 	"github.com/shurcooL/htmlg"
+	"github.com/shurcooL/reactions"
+	"github.com/shurcooL/users"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
 
 // DmitriShuralyov is a person whose resume is on display.
-type DmitriShuralyov struct{}
+type DmitriShuralyov struct {
+	Reactions   reactions.Service
+	CurrentUser users.User
+}
 
 func (DmitriShuralyov) Experience() Section {
 	return Section{
@@ -119,7 +124,7 @@ func (DmitriShuralyov) Projects() Section {
 	}
 }
 
-func (DmitriShuralyov) Skills() Section {
+func (ds DmitriShuralyov) Skills() Section {
 	return Section{
 		Title: "Skills",
 
@@ -127,23 +132,23 @@ func (DmitriShuralyov) Skills() Section {
 			{
 				Title: "Languages and APIs",
 				Lines: []Component{
-					Reactable{ID: "Go", Content: Text("Go")},
-					Reactable{ID: "C/C++", Content: fade("C/C++")},
-					Reactable{ID: "Java", Content: fade("Java")},
-					Reactable{ID: "C#", Content: fade("C#")},
-					Reactable{ID: "OpenGL", Content: Text("OpenGL")},
-					Reactable{ID: "SQL", Content: fade("SQL")},
+					ds.Reactable("Go", Text("Go")),
+					ds.Reactable("C/C++", fade("C/C++")),
+					ds.Reactable("Java", fade("Java")),
+					ds.Reactable("C#", fade("C#")),
+					ds.Reactable("OpenGL", Text("OpenGL")),
+					ds.Reactable("SQL", fade("SQL")),
 				},
 			},
 			{
 				Title: "Software",
 				Lines: []Component{
-					Reactable{ID: "Git", Content: Text("Git")},
-					Reactable{ID: "Xcode", Content: Text("Xcode")},
-					Reactable{ID: "Visual Studio", Content: Text("Visual Studio")},
-					Reactable{ID: "OS X", Content: Text("OS X")},
-					Reactable{ID: "Linux", Content: Text("Linux")},
-					Reactable{ID: "Windows", Content: Text("Windows")},
+					ds.Reactable("Git", Text("Git")),
+					ds.Reactable("Xcode", Text("Xcode")),
+					ds.Reactable("Visual Studio", Text("Visual Studio")),
+					ds.Reactable("OS X", Text("OS X")),
+					ds.Reactable("Linux", Text("Linux")),
+					ds.Reactable("Windows", Text("Windows")),
 				},
 			},
 		},
@@ -174,6 +179,17 @@ func (DmitriShuralyov) Education() Section {
 				},
 			},
 		},
+	}
+}
+
+// Reactable is a convenience helper that creates a Reactable with id and content.
+// It populates Reactable's Reactions, CurrentUser fields from ds.
+func (ds DmitriShuralyov) Reactable(id string, content Component) Reactable {
+	return Reactable{
+		Reactions:   ds.Reactions,
+		CurrentUser: ds.CurrentUser,
+		ID:          id,
+		Content:     content,
 	}
 }
 

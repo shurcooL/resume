@@ -11,13 +11,8 @@ import (
 )
 
 // RenderBodyInnerHTML renders the inner HTML of the <body> element of the page that displays the resume.
-// It's not safe for concurrent use.
+// It's safe for concurrent use.
 func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactions reactions.Service, notifications notifications.Service, authenticatedUser users.User, returnURL string) error {
-	// THINK: Should I work really hard (and add verbosity) to eliminate these package-level variables,
-	//        or is it okay to keep them that way?
-	reactableReactionsService = reactions
-	reactionCurrentUser = authenticatedUser
-
 	// Render the header.
 	header := Header{
 		CurrentUser:   authenticatedUser,
@@ -30,7 +25,11 @@ func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactions reactions.S
 	}
 
 	// Render the resume contents.
-	err = htmlg.RenderComponents(w, DmitriShuralyov{})
+	resume := DmitriShuralyov{
+		Reactions:   reactions,
+		CurrentUser: authenticatedUser,
+	}
+	err = htmlg.RenderComponents(w, resume)
 	if err != nil {
 		return err
 	}

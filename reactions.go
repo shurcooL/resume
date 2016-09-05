@@ -18,16 +18,11 @@ const ReactableURL = "dmitri.shuralyov.com/resume"
 // Reactable is a wrapper component for any Content that can be reacted to.
 // ID is the reactable ID.
 type Reactable struct {
-	ID      string
-	Content Component
+	Reactions   reactions.Service
+	CurrentUser users.User
+	ID          string
+	Content     Component
 }
-
-// THINK: Should I work really hard (and add verbosity) to eliminate this package-level variable,
-//        or is it okay to keep it this way?
-
-// reactableReactionsService is a reactions.Service used by Reactable.Render().
-// It's set before the Reactable components are rendered, and not modified during rendering.
-var reactableReactionsService reactions.Service
 
 func (r Reactable) Render() []*html.Node {
 	// TODO: Make this much nicer.
@@ -43,13 +38,13 @@ func (r Reactable) Render() []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	reactions, err := reactableReactionsService.Get(context.TODO(), ReactableURL, r.ID) // TODO: Parallelize this for better performance.
+	reactions, err := r.Reactions.Get(context.TODO(), ReactableURL, r.ID) // TODO: Parallelize this for better performance.
 	if err != nil {
 		log.Println(err)
 		reactions = nil
 	}
 	for _, reaction := range reactions {
-		for _, n := range (Reaction{reaction: reaction}).Render() {
+		for _, n := range (Reaction{Reaction: reaction, CurrentUser: r.CurrentUser}).Render() {
 			div.AppendChild(n)
 		}
 	}
@@ -60,17 +55,11 @@ func (r Reactable) Render() []*html.Node {
 	return append(r.Content.Render(), div)
 }
 
-// Reaction is a component for displaying a single reaction.
+// Reaction is a component for displaying a single Reaction, as seen by CurrentUser.
 type Reaction struct {
-	Reaction reactions.Reaction
+	Reaction    reactions.Reaction
+	CurrentUser users.User
 }
-
-// THINK: Should I work really hard (and add verbosity) to eliminate this package-level variable,
-//        or is it okay to keep it this way?
-
-// reactionCurrentUser is the current user used by Reaction.Render().
-// It's set before the Reaction components are rendered, and not modified during rendering.
-var reactionCurrentUser users.User
 
 func (r Reaction) Render() []*html.Node {
 	// TODO: Make this much nicer.
@@ -121,20 +110,19 @@ func (r Reaction) Render() []*html.Node {
 	return []*html.Node{a}
 }
 
-// THINK.
-func (Reaction) containsCurrentUser(users []users.User) bool {
-	if reactionCurrentUser.ID == 0 {
+func (r Reaction) containsCurrentUser(users []users.User) bool {
+	if r.CurrentUser.ID == 0 {
 		return false
 	}
 	for _, u := range users {
-		if u.ID == reactionCurrentUser.ID {
+		if u.ID == r.CurrentUser.ID {
 			return true
 		}
 	}
 	return false
 }
 
-func (Reaction) reactionTooltip(reaction reactions.Reaction) string {
+func (r Reaction) reactionTooltip(reaction reactions.Reaction) string {
 	var users string
 	for i, u := range reaction.Users {
 		if i != 0 {
@@ -144,7 +132,7 @@ func (Reaction) reactionTooltip(reaction reactions.Reaction) string {
 				users += " and "
 			}
 		}
-		if reactionCurrentUser.ID != 0 && u.ID == reactionCurrentUser.ID {
+		if r.CurrentUser.ID != 0 && u.ID == r.CurrentUser.ID {
 			if i == 0 {
 				users += "You"
 			} else {
