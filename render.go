@@ -20,10 +20,9 @@ func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactions reactions.S
 
 	// Render the header.
 	header := Header{
-		notifications: notifications,
-
-		CurrentUser: authenticatedUser,
-		ReturnURL:   returnURL,
+		CurrentUser:   authenticatedUser,
+		ReturnURL:     returnURL,
+		Notifications: notifications,
 	}
 	err := htmlg.RenderComponentsContext(ctx, w, header)
 	if err != nil {

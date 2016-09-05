@@ -13,10 +13,9 @@ import (
 )
 
 type Header struct {
-	notifications notifications.Service
-
-	CurrentUser users.User
-	ReturnURL   string
+	CurrentUser   users.User
+	ReturnURL     string
+	Notifications notifications.Service
 }
 
 func (h Header) Render(ctx context.Context) []*html.Node {
@@ -24,7 +23,7 @@ func (h Header) Render(ctx context.Context) []*html.Node {
 	/*
 		<div style="text-align: right; margin-bottom: 20px; height: 18px; font-size: 12px;">
 			{{if h.CurrentUser.ID}}
-				Notifications{Unread: h.notifications.Count() > 0}
+				Notifications{Unread: h.Notifications.Count() > 0}
 				<a class="topbar-avatar" href="{{h.CurrentUser.HTMLURL}}" target="_blank" tabindex=-1>
 					<img class="topbar-avatar" src="{{h.CurrentUser.AvatarURL}}" title="Signed in as {{h.CurrentUser.Login}}.">
 				</a>
@@ -44,7 +43,7 @@ func (h Header) Render(ctx context.Context) []*html.Node {
 
 	if h.CurrentUser.ID != 0 {
 		{ // Notifications icon.
-			n, err := h.notifications.Count(ctx, nil)
+			n, err := h.Notifications.Count(ctx, nil)
 			if err != nil {
 				log.Println(err)
 				n = 0
