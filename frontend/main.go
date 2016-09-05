@@ -98,6 +98,41 @@ func (httpReactions) Toggle(_ context.Context, uri string, id string, tr reactio
 	return rs, err
 }
 
+// httpNotifications implements notifications.Service remotely over HTTP.
+type httpNotifications struct{}
+
+var _ notifications.Service = httpNotifications{}
+
+func (httpNotifications) Count(_ context.Context, opt interface{}) (uint64, error) {
+	resp, err := http.Get("/api/notifications/count")
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return 0, fmt.Errorf("did not get acceptable status code: %v body: %q", resp.Status, body)
+	}
+	var u uint64
+	err = json.NewDecoder(resp.Body).Decode(&u)
+	return u, err
+}
+func (httpNotifications) List(_ context.Context, opt notifications.ListOptions) (notifications.Notifications, error) {
+	return nil, fmt.Errorf("List: not implemented")
+}
+func (httpNotifications) MarkAllRead(_ context.Context, repo notifications.RepoSpec) error {
+	return fmt.Errorf("MarkAllRead: not implemented")
+}
+func (httpNotifications) Subscribe(_ context.Context, appID string, repo notifications.RepoSpec, threadID uint64, subscribers []users.UserSpec) error {
+	return fmt.Errorf("Subscribe: not implemented")
+}
+func (httpNotifications) MarkRead(_ context.Context, appID string, repo notifications.RepoSpec, threadID uint64) error {
+	return fmt.Errorf("MarkRead: not implemented")
+}
+func (httpNotifications) Notify(_ context.Context, appID string, repo notifications.RepoSpec, threadID uint64, nr notifications.NotificationRequest) error {
+	return fmt.Errorf("Notify: not implemented")
+}
+
 // httpUsers implements users.Service remotely over HTTP.
 type httpUsers struct{}
 
