@@ -20,7 +20,12 @@ func (t Text) Render() []*html.Node {
 type Fade string
 
 func (t Fade) Render() []*html.Node {
-	return []*html.Node{htmlg.SpanClass("fade", htmlg.Text(string(t)))}
+	span := &html.Node{
+		Type: html.ElementNode, Data: atom.Span.String(),
+		Attr: []html.Attribute{{Key: atom.Style.String(), Val: `color: #969696;`}},
+	}
+	span.AppendChild(htmlg.Text(string(t)))
+	return []*html.Node{span}
 }
 
 type Link struct {
