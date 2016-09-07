@@ -1,4 +1,4 @@
-package resume
+package component
 
 import (
 	"fmt"
@@ -36,7 +36,7 @@ func ExampleDateRange() {
 	// Output: <span title="2 years, 4 months">2010/02–2012/06</span>
 }
 
-func render(c Component) { fmt.Println(htmlg.Render(c.Render()...)) }
+func render(c htmlg.Component) { fmt.Println(htmlg.Render(c.Render()...)) }
 
 func ExampleDateRange_yearsMonths() {
 	fmt.Println(yearsMonths(Date{Year: 2010, Month: time.February}, Date{Year: 2010, Month: time.February}))

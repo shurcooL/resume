@@ -1,4 +1,4 @@
-package resume
+package component
 
 import (
 	"context"
@@ -12,16 +12,13 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
-// ReactableURL is the URL for reactionable items on this resume.
-const ReactableURL = "dmitri.shuralyov.com/resume"
-
 // Reactable is a wrapper component for any Content that can be reacted to.
-// ID is the reactable ID.
 type Reactable struct {
-	Reactions   reactions.Service
-	CurrentUser users.User
-	ID          string
-	Content     Component
+	Reactions    reactions.Service
+	ReactableURL string
+	CurrentUser  users.User
+	ID           string // ID is the reactable ID.
+	Content      htmlg.Component
 }
 
 func (r Reactable) Render() []*html.Node {
@@ -38,7 +35,7 @@ func (r Reactable) Render() []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	reactions, err := r.Reactions.Get(context.TODO(), ReactableURL, r.ID) // TODO: Parallelize this for better performance.
+	reactions, err := r.Reactions.Get(context.TODO(), r.ReactableURL, r.ID) // TODO: Parallelize this for better performance.
 	if err != nil {
 		log.Println(err)
 		reactions = nil

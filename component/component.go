@@ -1,4 +1,5 @@
-package resume
+// Package component contains individual components that can render themselves as HTML.
+package component
 
 import (
 	"fmt"
@@ -9,19 +10,16 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
-type Component interface {
-	Render() []*html.Node
-}
-
 type Text string
 
 func (t Text) Render() []*html.Node {
 	return []*html.Node{htmlg.Text(string(t))}
 }
 
-type fade string
+// Fade is like Text, except the font color is faded out to a light gray shade.
+type Fade string
 
-func (t fade) Render() []*html.Node {
+func (t Fade) Render() []*html.Node {
 	return []*html.Node{htmlg.SpanClass("fade", htmlg.Text(string(t)))}
 }
 
@@ -36,23 +34,23 @@ func (l Link) Render() []*html.Node {
 	return []*html.Node{a}
 }
 
-// join components and strings into a single Component.
-func join(a ...interface{}) List {
+// Join components and strings into a single component.
+func Join(a ...interface{}) List {
 	var list List
 	for _, v := range a {
 		switch v := v.(type) {
-		case Component:
+		case htmlg.Component:
 			list = append(list, v)
 		case string:
 			list = append(list, Text(v))
 		default:
-			panic(fmt.Errorf("join: unsupported type: %T", v))
+			panic(fmt.Errorf("Join: unsupported type: %T", v))
 		}
 	}
 	return list
 }
 
-type List []Component
+type List []htmlg.Component
 
 func (l List) Render() []*html.Node {
 	var nodes []*html.Node

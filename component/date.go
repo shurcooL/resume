@@ -1,4 +1,4 @@
-package resume
+package component
 
 import (
 	"fmt"
@@ -40,7 +40,7 @@ func (p Present) Render() []*html.Node {
 
 type DateComponent interface {
 	Date() (year int, month time.Month)
-	Component
+	htmlg.Component
 }
 
 // DateRange represents a span of time between two dates.

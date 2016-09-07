@@ -11,6 +11,7 @@ import (
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/resume"
+	"github.com/shurcooL/resume/component"
 	"github.com/shurcooL/users"
 	"honnef.co/go/js/dom"
 )
@@ -93,7 +94,7 @@ func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser us
 		signIn := document.CreateElement("div").(*dom.HTMLDivElement)
 		signIn.SetClass("rm-reactions-menu-signin")
 		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
-		signIn.SetInnerHTML(htmlg.RenderComponentsString(resume.PostButton{Action: "/login/github", Text: "Sign in via GitHub", ReturnURL: returnURL}, resume.Text(" to react.")))
+		signIn.SetInnerHTML(htmlg.RenderComponentsString(component.PostButton{Action: "/login/github", Text: "Sign in via GitHub", ReturnURL: returnURL}, component.Text(" to react.")))
 		disabled.AppendChild(signIn)
 		container.AppendChild(disabled)
 	}
@@ -129,11 +130,11 @@ func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser us
 			}
 
 			// TODO: Dedup. This is the inner HTML of Reactable component, straight up copy-pasted here.
-			var l resume.List
+			var l component.List
 			for _, reaction := range reactions {
-				l = append(l, resume.Reaction{Reaction: reaction, CurrentUser: Reactions.authenticatedUser})
+				l = append(l, component.Reaction{Reaction: reaction, CurrentUser: Reactions.authenticatedUser})
 			}
-			l = append(l, resume.NewReaction{ReactableID: Reactions.reactableID})
+			l = append(l, component.NewReaction{ReactableID: Reactions.reactableID})
 			body := htmlg.Render(l.Render()...)
 
 			Reactions.reactableContainer.SetInnerHTML(string(body))
@@ -244,11 +245,11 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 		}
 
 		// TODO: Dedup. This is the inner HTML of Reactable component, straight up copy-pasted here.
-		var l resume.List
+		var l component.List
 		for _, reaction := range reactions {
-			l = append(l, resume.Reaction{Reaction: reaction, CurrentUser: rm.authenticatedUser})
+			l = append(l, component.Reaction{Reaction: reaction, CurrentUser: rm.authenticatedUser})
 		}
-		l = append(l, resume.NewReaction{ReactableID: reactableID})
+		l = append(l, component.NewReaction{ReactableID: reactableID})
 		body := htmlg.Render(l.Render()...)
 
 		container.SetInnerHTML(string(body))
