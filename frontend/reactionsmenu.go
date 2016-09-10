@@ -8,6 +8,7 @@ import (
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/shurcooL/go/gopherjs_http/jsutil"
+	homecomponent "github.com/shurcooL/home/component"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/resume"
@@ -94,7 +95,7 @@ func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser us
 		signIn := document.CreateElement("div").(*dom.HTMLDivElement)
 		signIn.SetClass("rm-reactions-menu-signin")
 		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
-		signIn.SetInnerHTML(htmlg.RenderComponentsString(component.PostButton{Action: "/login/github", Text: "Sign in via GitHub", ReturnURL: returnURL}, component.Text(" to react.")))
+		signIn.SetInnerHTML(htmlg.RenderComponentsString(homecomponent.PostButton{Action: "/login/github", Text: "Sign in via GitHub", ReturnURL: returnURL}, component.Text(" to react.")))
 		disabled.AppendChild(signIn)
 		container.AppendChild(disabled)
 	}

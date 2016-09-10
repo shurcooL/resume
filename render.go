@@ -4,10 +4,10 @@ import (
 	"context"
 	"io"
 
+	"github.com/shurcooL/home/component"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/notifications"
 	"github.com/shurcooL/reactions"
-	"github.com/shurcooL/resume/component"
 	"github.com/shurcooL/users"
 )
 
