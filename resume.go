@@ -258,9 +258,7 @@ func (s Section) Render() []*html.Node {
 		if i.WIP {
 			continue
 		}
-		for _, n := range i.Render() {
-			ns = append(ns, n)
-		}
+		ns = append(ns, i.Render()...)
 	}
 	return ns
 }

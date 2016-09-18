@@ -31,9 +31,5 @@ func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactions reactions.S
 		CurrentUser: authenticatedUser,
 	}
 	err = htmlg.RenderComponents(w, resume)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
