@@ -21,7 +21,7 @@ type ReactionsBar struct {
 	ID           string // ID is the reactable ID.
 }
 
-func (r ReactionsBar) Render() []*html.Node {
+func (r ReactionsBar) RenderContext(ctx context.Context) []*html.Node {
 	// TODO: Make this much nicer.
 	/*
 		<div class="reactable-container" data-reactableID="{{.ReactableID}}">
@@ -35,7 +35,7 @@ func (r ReactionsBar) Render() []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	reactions, err := r.Reactions.Get(context.TODO(), r.ReactableURL, r.ID) // TODO: Parallelize this for better performance.
+	reactions, err := r.Reactions.Get(ctx, r.ReactableURL, r.ID) // TODO: Parallelize this for better performance.
 	if err != nil {
 		log.Println(err)
 		reactions = nil
@@ -49,6 +49,9 @@ func (r ReactionsBar) Render() []*html.Node {
 		div.AppendChild(n)
 	}
 	return []*html.Node{div}
+}
+func (r ReactionsBar) Render() []*html.Node {
+	return r.RenderContext(context.TODO())
 }
 
 // Reaction is a component for displaying a single Reaction, as seen by CurrentUser.
