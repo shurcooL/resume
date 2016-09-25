@@ -12,16 +12,16 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
-// Reactable is a wrapper component for any Content that can be reacted to.
-type Reactable struct {
+// ReactionsBar is a component next to anything that can be reacted to, with reactable ID.
+// It displays all reactions for that reactable ID, and a NewReaction component for adding new reactions.
+type ReactionsBar struct {
 	Reactions    reactions.Service
 	ReactableURL string
 	CurrentUser  users.User
 	ID           string // ID is the reactable ID.
-	Content      htmlg.Component
 }
 
-func (r Reactable) Render() []*html.Node {
+func (r ReactionsBar) Render() []*html.Node {
 	// TODO: Make this much nicer.
 	/*
 		<div class="reactable-container" data-reactableID="{{.ReactableID}}">
@@ -48,8 +48,7 @@ func (r Reactable) Render() []*html.Node {
 	for _, n := range (NewReaction{ReactableID: r.ID}).Render() {
 		div.AppendChild(n)
 	}
-
-	return append(r.Content.Render(), div)
+	return []*html.Node{div}
 }
 
 // Reaction is a component for displaying a single Reaction, as seen by CurrentUser.

@@ -186,16 +186,16 @@ func (DmitriShuralyov) Education() Section {
 	}
 }
 
-// Reactable is a convenience helper that creates a Reactable with id and content.
-// It populates Reactable's Reactions, CurrentUser fields from ds.
-func (ds DmitriShuralyov) Reactable(id string, content htmlg.Component) component.Reactable {
-	return component.Reactable{
+// Reactable is a convenience helper that joins reactable content with its ReactionsBar,
+// using id as reactable ID. It populates ReactionsBar's Reactions, CurrentUser fields from ds.
+func (ds DmitriShuralyov) Reactable(id string, content htmlg.Component) htmlg.Component {
+	reactionsBar := component.ReactionsBar{
 		Reactions:    ds.Reactions,
 		ReactableURL: ReactableURL,
 		CurrentUser:  ds.CurrentUser,
 		ID:           id,
-		Content:      content,
 	}
+	return component.List{content, reactionsBar}
 }
 
 func (ds DmitriShuralyov) Render() []*html.Node {
