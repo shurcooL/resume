@@ -11,11 +11,12 @@ import (
 	homecomponent "github.com/shurcooL/home/component"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
-	"github.com/shurcooL/resume"
 	"github.com/shurcooL/resume/component"
 	"github.com/shurcooL/users"
 	"honnef.co/go/js/dom"
 )
+
+// TODO: Dedup with idiomaticgo/reactionsmenu.go. It's identical.
 
 var Reactions ReactionsMenu
 
@@ -61,6 +62,7 @@ func (rm *ReactionsMenu) hide() {
 }
 
 type ReactionsMenu struct {
+	reactableURI      string
 	reactionsService  reactions.Service
 	authenticatedUser users.User
 
@@ -74,10 +76,11 @@ type ReactionsMenu struct {
 }
 
 // setupReactionsMenu has to be called when document.Body() already exists.
-func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser users.User) {
+func setupReactionsMenu(reactableURI string, reactionsService reactions.Service, authenticatedUser users.User) {
 	js.Global.Set("ShowReactionMenu", jsutil.Wrap(Reactions.Show))
 	js.Global.Set("ToggleReaction", jsutil.Wrap(Reactions.ToggleReaction))
 
+	Reactions.reactableURI = reactableURI
 	Reactions.reactionsService = reactionsService
 	Reactions.authenticatedUser = authenticatedUser
 
@@ -124,7 +127,7 @@ func setupReactionsMenu(reactionsService reactions.Service, authenticatedUser us
 		}
 		emojiID := filtered[i]
 		go func() {
-			reactions, err := Reactions.reactionsService.Toggle(context.TODO(), resume.ReactableURL, Reactions.reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(strings.Trim(emojiID, ":"))})
+			reactions, err := Reactions.reactionsService.Toggle(context.TODO(), Reactions.reactableURI, Reactions.reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(strings.Trim(emojiID, ":"))})
 			if err != nil {
 				log.Println(err)
 				return
@@ -239,7 +242,7 @@ func (rm *ReactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 	}
 
 	go func() {
-		reactions, err := rm.reactionsService.Toggle(context.TODO(), resume.ReactableURL, reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(emojiID)})
+		reactions, err := rm.reactionsService.Toggle(context.TODO(), rm.reactableURI, reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(emojiID)})
 		if err != nil {
 			log.Println(err)
 			return

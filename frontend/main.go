@@ -48,5 +48,5 @@ func setup() {
 		document.Body().SetInnerHTML(buf.String())
 	}
 
-	setupReactionsMenu(reactionsService, authenticatedUser)
+	setupReactionsMenu(resume.ReactableURL, reactionsService, authenticatedUser)
 }
