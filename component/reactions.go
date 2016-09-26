@@ -69,7 +69,7 @@ func (r Reaction) Render() []*html.Node {
 					<span class="emoji-inner" style="background-position: {{reactionPosition .Reaction}};">
 					</span>
 				</span>
-				<b>{{len .Users}}</b>
+				<strong>{{len .Users}}</strong>
 			</div>
 		</a>
 	*/
@@ -85,7 +85,7 @@ func (r Reaction) Render() []*html.Node {
 		Attr: []html.Attribute{{Key: atom.Class.String(), Val: "emoji-outer emoji-sizer"}},
 	}
 	outerSpan.AppendChild(innerSpan)
-	b := htmlg.Strong(fmt.Sprint(len(r.Reaction.Users)))
+	strong := htmlg.Strong(fmt.Sprint(len(r.Reaction.Users)))
 	divClass := "reaction"
 	if !r.containsCurrentUser(r.Reaction.Users) {
 		divClass += " others"
@@ -95,7 +95,7 @@ func (r Reaction) Render() []*html.Node {
 		Attr: []html.Attribute{{Key: atom.Class.String(), Val: divClass}},
 	}
 	div.AppendChild(outerSpan)
-	div.AppendChild(b)
+	div.AppendChild(strong)
 	a := &html.Node{
 		Type: html.ElementNode, Data: atom.A.String(),
 		Attr: []html.Attribute{
