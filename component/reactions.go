@@ -78,25 +78,29 @@ func (r ReactionsBarInner) Render() []*html.Node {
 	return nodes
 }
 
-// prioritizeThumbsUpDown bubbles +1 and -1 reactions to the front. It returns
+// prioritizeThumbsUpDown bubbles thumbs up/down reactions to the front. It returns
 // an index after which spacing should be inserted to visually separate
-// +1 and -1 reactions from the rest, or -1 if no need.
+// thumbs up/down reactions from the rest, or -1 if no need.
 func prioritizeThumbsUpDown(reactions []reactions.Reaction) (spacingAfter int) {
 	spacingAfter = -1
-	for i, reaction := range reactions {
-		if reaction.Reaction == "+1" {
+	for i, reaction := range reactions { // Move thumbs down reaction to the front first.
+		if reaction.Reaction == "-1" {
+			thumbsDown := reaction
 			for ; i > 0; i-- {
-				reactions[i-1], reactions[i] = reactions[i], reactions[i-1]
+				reactions[i] = reactions[i-1]
 			}
+			reactions[0] = thumbsDown
 			spacingAfter++
 			break
 		}
 	}
-	for i, reaction := range reactions {
-		if reaction.Reaction == "-1" {
-			for ; i > 1; i-- {
-				reactions[i-1], reactions[i] = reactions[i], reactions[i-1]
+	for i, reaction := range reactions { // Move thumbs up reaction to the front last.
+		if reaction.Reaction == "+1" {
+			thumbsUp := reaction
+			for ; i > 0; i-- {
+				reactions[i] = reactions[i-1]
 			}
+			reactions[0] = thumbsUp
 			spacingAfter++
 			break
 		}
