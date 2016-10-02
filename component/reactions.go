@@ -40,9 +40,16 @@ func (r ReactionsBar) RenderContext(ctx context.Context) []*html.Node {
 		log.Println(err)
 		reactions = nil
 	}
-	for _, reaction := range reactions {
+	spacingAfter := prioritizeThumbsUpDown(reactions)
+	for i, reaction := range reactions {
 		for _, n := range (Reaction{Reaction: reaction, CurrentUser: r.CurrentUser}).Render() {
 			div.AppendChild(n)
+		}
+		if i == spacingAfter {
+			div.AppendChild(&html.Node{
+				Type: html.ElementNode, Data: atom.Span.String(),
+				Attr: []html.Attribute{{Key: atom.Style.String(), Val: "margin-right: 4px;"}},
+			})
 		}
 	}
 	for _, n := range (NewReaction{ReactableID: r.ID}).Render() {
@@ -52,6 +59,35 @@ func (r ReactionsBar) RenderContext(ctx context.Context) []*html.Node {
 }
 func (r ReactionsBar) Render() []*html.Node {
 	return r.RenderContext(context.TODO())
+}
+
+// prioritizeThumbsUpDown bubbles +1 and -1 reactions to the front. It returns
+// an index after which spacing should be inserted to visually separate
+// +1 and -1 reactions from the rest, or -1 if no need.
+func prioritizeThumbsUpDown(reactions []reactions.Reaction) (spacingAfter int) {
+	spacingAfter = -1
+	for i, reaction := range reactions {
+		if reaction.Reaction == "+1" {
+			for ; i > 0; i-- {
+				reactions[i-1], reactions[i] = reactions[i], reactions[i-1]
+			}
+			spacingAfter++
+			break
+		}
+	}
+	for i, reaction := range reactions {
+		if reaction.Reaction == "-1" {
+			for ; i > 1; i-- {
+				reactions[i-1], reactions[i] = reactions[i], reactions[i-1]
+			}
+			spacingAfter++
+			break
+		}
+	}
+	if spacingAfter == len(reactions)-1 {
+		spacingAfter = -1 // No need for spacing if there are no other reactions after +1 and -1.
+	}
+	return spacingAfter
 }
 
 // Reaction is a component for displaying a single Reaction, as seen by CurrentUser.
