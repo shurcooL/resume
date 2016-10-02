@@ -25,7 +25,7 @@ func (r ReactionsBar) RenderContext(ctx context.Context) []*html.Node {
 	// TODO: Make this much nicer.
 	/*
 		<div class="reactable-container" data-reactableID="{{.ReactableID}}">
-			{{template "reactions" .Reactions}}{{template "new-reaction" .ID}}
+			ReactionsBarInner{Reactions: reactions, CurrentUser: r.CurrentUser, ReactableID: r.ID}
 		</div>
 	*/
 	div := &html.Node{
@@ -35,30 +35,47 @@ func (r ReactionsBar) RenderContext(ctx context.Context) []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	reactions, err := r.Reactions.Get(ctx, r.ReactableURL, r.ID) // TODO: Parallelize this for better performance.
+	reactions, err := r.Reactions.Get(ctx, r.ReactableURL, r.ID) // TODO: Parallelize these for better performance.
 	if err != nil {
 		log.Println(err)
 		reactions = nil
 	}
-	spacingAfter := prioritizeThumbsUpDown(reactions)
-	for i, reaction := range reactions {
-		for _, n := range (Reaction{Reaction: reaction, CurrentUser: r.CurrentUser}).Render() {
-			div.AppendChild(n)
-		}
-		if i == spacingAfter {
-			div.AppendChild(&html.Node{
-				Type: html.ElementNode, Data: atom.Span.String(),
-				Attr: []html.Attribute{{Key: atom.Style.String(), Val: "margin-right: 4px;"}},
-			})
-		}
-	}
-	for _, n := range (NewReaction{ReactableID: r.ID}).Render() {
+	for _, n := range (ReactionsBarInner{Reactions: reactions, CurrentUser: r.CurrentUser, ReactableID: r.ID}).Render() {
 		div.AppendChild(n)
 	}
 	return []*html.Node{div}
 }
 func (r ReactionsBar) Render() []*html.Node {
 	return r.RenderContext(context.TODO())
+}
+
+// ReactionsBarInner is a static component that displays all reactions, and
+// a NewReaction component with ReactableID for adding new reactions.
+type ReactionsBarInner struct {
+	Reactions   []reactions.Reaction
+	CurrentUser users.User
+	ReactableID string
+}
+
+func (r ReactionsBarInner) Render() []*html.Node {
+	// TODO: Make this much nicer.
+	/*
+		{{template "reactions" prioritizeThumbsUpDown(.Reactions)}}
+		NewReaction{ReactableID: r.ReactableID}
+	*/
+	var nodes []*html.Node
+	spacingAfter := prioritizeThumbsUpDown(r.Reactions)
+	for i, reaction := range r.Reactions {
+		nodes = append(nodes, Reaction{Reaction: reaction, CurrentUser: r.CurrentUser}.Render()...)
+		if i == spacingAfter {
+			nodes = append(nodes, &html.Node{
+				Type: html.ElementNode, Data: atom.Span.String(),
+				Attr: []html.Attribute{{Key: atom.Style.String(), Val: "margin-right: 4px;"}},
+			})
+		}
+	}
+	nodes = append(nodes, NewReaction{ReactableID: r.ReactableID}.Render()...)
+	return nodes
 }
 
 // prioritizeThumbsUpDown bubbles +1 and -1 reactions to the front. It returns
