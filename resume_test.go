@@ -13,6 +13,11 @@ import (
 	"github.com/shurcooL/users"
 )
 
+var (
+	alice = users.User{UserSpec: users.UserSpec{ID: 1}, Login: "Alice"}
+	bob   = users.User{UserSpec: users.UserSpec{ID: 2}, Login: "Bob"}
+)
+
 // TestBodyInnerHTML validates that resume.RenderBodyInnerHTML renders the body inner HTML as expected.
 func TestBodyInnerHTML(t *testing.T) {
 	want, err := ioutil.ReadFile(filepath.Join("testdata", "body-inner.html"))
@@ -21,8 +26,9 @@ func TestBodyInnerHTML(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	resume.RenderBodyInnerHTML(context.TODO(), &buf, mockReactions{}, mockNotifications{}, users.User{}, "/")
+	resume.RenderBodyInnerHTML(context.TODO(), &buf, mockReactions{}, mockNotifications{}, alice, "/")
 	got := buf.Bytes()
+	//ioutil.WriteFile(filepath.Join("testdata", "body-inner.html"), got, 0644)
 
 	if !bytes.Equal(got, want) {
 		t.Error("resume.RenderBodyInnerHTML produced output that doesn't match 'testdata/body-inner.html'")
@@ -32,7 +38,13 @@ func TestBodyInnerHTML(t *testing.T) {
 type mockReactions struct{ reactions.Service }
 
 func (mockReactions) Get(_ context.Context, uri string, id string) ([]reactions.Reaction, error) {
-	return nil, nil
+	return []reactions.Reaction{{
+		Reaction: "smile",
+		Users:    []users.User{alice, bob},
+	}, {
+		Reaction: "balloon",
+		Users:    []users.User{bob},
+	}}, nil
 }
 
 type mockNotifications struct{ notifications.Service }
