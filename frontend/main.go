@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/shurcooL/frontend/reactionsmenu"
 	"github.com/shurcooL/home/http"
 	"github.com/shurcooL/resume"
 	"github.com/shurcooL/users"
@@ -48,5 +49,5 @@ func setup() {
 		document.Body().SetInnerHTML(buf.String())
 	}
 
-	setupReactionsMenu(resume.ReactableURL, reactionsService, authenticatedUser)
+	reactionsmenu.Setup(resume.ReactableURL, reactionsService, authenticatedUser)
 }
