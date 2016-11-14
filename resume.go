@@ -30,7 +30,7 @@ func (DmitriShuralyov) Experience() Section {
 				Title:    "Senior Software Engineer, Full Stack",
 				Subtitle: "Sourcegraph",
 				Dates: component.DateRange{
-					From: component.Date{Year: 2015, Month: time.April}, To: component.Present{},
+					From: component.Date{Year: 2015, Month: time.April}, To: component.Date{Year: 2016, Month: time.November},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Implemented significant non-trivial pieces of core Sourcegraph functionality in Go, including backend language analysis enhancements, and frontend components and visualizations."),
