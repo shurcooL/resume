@@ -3,6 +3,7 @@ package resume_test
 import (
 	"bytes"
 	"context"
+	"flag"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
@@ -12,6 +13,8 @@ import (
 	"github.com/shurcooL/resume"
 	"github.com/shurcooL/users"
 )
+
+var updateFlag = flag.Bool("update", false, "Update golden files.")
 
 var (
 	alice = users.User{UserSpec: users.UserSpec{ID: 1}, Login: "Alice"}
@@ -28,7 +31,13 @@ func TestBodyInnerHTML(t *testing.T) {
 	var buf bytes.Buffer
 	resume.RenderBodyInnerHTML(context.TODO(), &buf, mockReactions{}, mockNotifications{}, alice, "/")
 	got := buf.Bytes()
-	//ioutil.WriteFile(filepath.Join("testdata", "body-inner.html"), got, 0644)
+	if *updateFlag {
+		err := ioutil.WriteFile(filepath.Join("testdata", "body-inner.html"), got, 0644)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return
+	}
 
 	if !bytes.Equal(got, want) {
 		t.Error("resume.RenderBodyInnerHTML produced output that doesn't match 'testdata/body-inner.html'")
