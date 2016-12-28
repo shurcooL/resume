@@ -29,7 +29,10 @@ func TestBodyInnerHTML(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	resume.RenderBodyInnerHTML(context.TODO(), &buf, mockReactions{}, mockNotifications{}, alice, "/")
+	err = resume.RenderBodyInnerHTML(context.TODO(), &buf, mockReactions{}, mockNotifications{}, alice, "/")
+	if err != nil {
+		t.Fatal(err)
+	}
 	got := buf.Bytes()
 	if *updateFlag {
 		err := ioutil.WriteFile(filepath.Join("testdata", "body-inner.html"), got, 0644)
