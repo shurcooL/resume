@@ -15,7 +15,10 @@ import (
 // ReactionsBar is a component next to anything that can be reacted to, with reactable ID.
 // It displays all reactions for that reactable ID, and a NewReaction component for adding new reactions.
 type ReactionsBar struct {
-	Reactions    reactions.Service
+	Reactions interface {
+		// Get reactions for id at uri. uri is clean '/'-separated URI. E.g., "example.com/page".
+		Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error)
+	}
 	ReactableURL string
 	CurrentUser  users.User
 	ID           string // ID is the reactable ID.
