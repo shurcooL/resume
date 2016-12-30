@@ -22,13 +22,8 @@ var updateFlag = flag.Bool("update", false, "Update golden files.")
 
 // TestBodyInnerHTML validates that resume.RenderBodyInnerHTML renders the body inner HTML as expected.
 func TestBodyInnerHTML(t *testing.T) {
-	want, err := ioutil.ReadFile(filepath.Join("testdata", "body-inner.html"))
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	var buf bytes.Buffer
-	err = resume.RenderBodyInnerHTML(context.TODO(), &buf, mockReactions{}, mockNotifications{}, alice, "/")
+	err := resume.RenderBodyInnerHTML(context.TODO(), &buf, mockReactions{}, mockNotifications{}, alice, "/")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,6 +36,10 @@ func TestBodyInnerHTML(t *testing.T) {
 		return
 	}
 
+	want, err := ioutil.ReadFile(filepath.Join("testdata", "body-inner.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !bytes.Equal(got, want) {
 		t.Error("resume.RenderBodyInnerHTML produced output that doesn't match 'testdata/body-inner.html'")
 	}
