@@ -1,5 +1,6 @@
 // frontend renders the resume entirely on the frontend.
-// It is a Go package meant to be compiled with GOARCH=js.
+// It is a Go package meant to be compiled with GOARCH=js
+// and executed in a browser, where the DOM is available.
 package main
 
 import (
@@ -20,7 +21,7 @@ var document = dom.GetWindow().Document().(dom.HTMLDocument)
 func main() {
 	switch readyState := document.ReadyState(); readyState {
 	case "loading":
-		document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
+		document.AddEventListener("DOMContentLoaded", false, func(dom.Event) {
 			go setup()
 		})
 	case "interactive", "complete":
