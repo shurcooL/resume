@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/shurcooL/htmlg"
+	"github.com/shurcooL/octiconssvg"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
 	"golang.org/x/net/html"
@@ -214,24 +215,25 @@ func (nr NewReaction) Render() []*html.Node {
 	/*
 		<a href="javascript:" title="React" onclick="ShowReactionMenu(this, event, {{.}});">
 			<div class="new-reaction">
-				<i class="octicon octicon-smiley"><sup>+</sup></i>
+				<octiconssvg.Smiley() class="smiley" />
+				<octiconssvg.PlusSmall() class="plus" />
 			</div>
 		</a>
 	*/
-	sup := &html.Node{
-		Type: html.ElementNode, Data: atom.Sup.String(),
-	}
-	sup.AppendChild(htmlg.Text("+"))
-	i := &html.Node{
-		Type: html.ElementNode, Data: atom.I.String(),
-		Attr: []html.Attribute{{Key: atom.Class.String(), Val: "octicon octicon-smiley"}},
-	}
-	i.AppendChild(sup)
+	smiley := octiconssvg.Smiley()
+	smiley.Attr = append(smiley.Attr, html.Attribute{
+		Key: atom.Class.String(), Val: "smiley",
+	})
+	plus := octiconssvg.PlusSmall()
+	plus.Attr = append(plus.Attr, html.Attribute{
+		Key: atom.Class.String(), Val: "plus",
+	})
 	div := &html.Node{
 		Type: html.ElementNode, Data: atom.Div.String(),
 		Attr: []html.Attribute{{Key: atom.Class.String(), Val: "new-reaction"}},
 	}
-	div.AppendChild(i)
+	div.AppendChild(smiley)
+	div.AppendChild(plus)
 	a := &html.Node{
 		Type: html.ElementNode, Data: atom.A.String(),
 		Attr: []html.Attribute{
