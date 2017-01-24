@@ -8,6 +8,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
+	"strconv"
+	"strings"
 
 	"github.com/shurcooL/frontend/reactionsmenu"
 	"github.com/shurcooL/home/http"
@@ -39,7 +42,9 @@ func setup() {
 		authenticatedUser = users.User{} // THINK: Should it be a fatal error or not? What about on frontend vs backend?
 	}
 
-	if !document.Body().HasChildNodes() {
+	query, _ := url.ParseQuery(strings.TrimPrefix(dom.GetWindow().Location().Search, "?"))
+	prerender, _ := strconv.ParseBool(query.Get("prerender"))
+	if !prerender {
 		var buf bytes.Buffer
 		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
 		err = resume.RenderBodyInnerHTML(context.TODO(), &buf, reactionsService, http.Notifications{}, authenticatedUser, returnURL)
