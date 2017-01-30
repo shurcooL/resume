@@ -14,6 +14,7 @@ import (
 
 	"github.com/shurcooL/frontend/reactionsmenu"
 	"github.com/shurcooL/home/http"
+	"github.com/shurcooL/notificationsapp/httpclient"
 	"github.com/shurcooL/resume"
 	"github.com/shurcooL/users"
 	"honnef.co/go/js/dom"
@@ -47,7 +48,7 @@ func setup() {
 	if !prerender {
 		var buf bytes.Buffer
 		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
-		err = resume.RenderBodyInnerHTML(context.TODO(), &buf, reactionsService, http.Notifications{}, authenticatedUser, returnURL)
+		err = resume.RenderBodyInnerHTML(context.TODO(), &buf, reactionsService, httpclient.Notifications{}, authenticatedUser, returnURL)
 		if err != nil {
 			log.Println(err)
 			return
