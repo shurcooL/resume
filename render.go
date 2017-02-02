@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/shurcooL/home/component"
+	homecomponent "github.com/shurcooL/home/component"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/notifications"
 	"github.com/shurcooL/reactions"
@@ -20,7 +20,7 @@ func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactions reactions.S
 	}
 
 	// Render the header.
-	header := component.Header{
+	header := homecomponent.Header{
 		CurrentUser:   authenticatedUser,
 		ReturnURL:     returnURL,
 		Notifications: notifications,

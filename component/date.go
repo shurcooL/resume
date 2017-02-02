@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/shurcooL/component"
 	"github.com/shurcooL/htmlg"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -20,9 +21,9 @@ func (d Date) Date() (year int, month time.Month) { return d.Year, d.Month }
 func (d Date) Render() []*html.Node {
 	switch d.Month {
 	case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12:
-		return Text(fmt.Sprintf("%d/%02d", d.Year, d.Month)).Render()
+		return component.Text(fmt.Sprintf("%d/%02d", d.Year, d.Month)).Render()
 	default:
-		return Text(fmt.Sprintf("%d", d.Year)).Render()
+		return component.Text(fmt.Sprintf("%d", d.Year)).Render()
 	}
 }
 
@@ -35,7 +36,7 @@ func (Present) Date() (year int, month time.Month) {
 }
 
 func (p Present) Render() []*html.Node {
-	return Text("Present").Render()
+	return component.Text("Present").Render()
 }
 
 type DateComponent interface {
@@ -49,7 +50,7 @@ type DateRange struct {
 }
 
 func (dr DateRange) Render() []*html.Node {
-	span := htmlg.Span(List{dr.From, Text("–"), dr.To}.Render()...)
+	span := htmlg.Span(component.List{dr.From, component.Text("–"), dr.To}.Render()...)
 
 	// Compute the years and months between From and To dates,
 	// and set that as the tooltip of DateRange.

@@ -4,9 +4,10 @@ import (
 	"html/template"
 	"time"
 
+	"github.com/shurcooL/component"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
-	"github.com/shurcooL/resume/component"
+	resumecomponent "github.com/shurcooL/resume/component"
 	"github.com/shurcooL/users"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -29,8 +30,8 @@ func (DmitriShuralyov) Experience() Section {
 			{
 				Title:    "Senior Software Engineer, Full Stack",
 				Subtitle: "Sourcegraph",
-				Dates: component.DateRange{
-					From: component.Date{Year: 2015, Month: time.April}, To: component.Date{Year: 2016, Month: time.November},
+				Dates: resumecomponent.DateRange{
+					From: resumecomponent.Date{Year: 2015, Month: time.April}, To: resumecomponent.Date{Year: 2016, Month: time.November},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Implemented significant non-trivial pieces of core Sourcegraph functionality in Go, including backend language analysis enhancements, and frontend components and visualizations."),
@@ -42,8 +43,8 @@ func (DmitriShuralyov) Experience() Section {
 			{
 				Title:    "Senior Software Engineer, Backend",
 				Subtitle: "Triggit",
-				Dates: component.DateRange{
-					From: component.Date{Year: 2013, Month: time.June}, To: component.Date{Year: 2015, Month: time.March},
+				Dates: resumecomponent.DateRange{
+					From: resumecomponent.Date{Year: 2013, Month: time.June}, To: resumecomponent.Date{Year: 2015, Month: time.March},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Built distributed low-latency web services and required components for processing hundreds of thousands of ad auction requests per second."),
@@ -54,19 +55,19 @@ func (DmitriShuralyov) Experience() Section {
 			},
 			{
 				Title: "Toolmaker",
-				Dates: component.DateRange{
-					From: component.Date{Year: 2011, Month: time.December}, To: component.Date{Year: 2013, Month: time.June},
+				Dates: resumecomponent.DateRange{
+					From: resumecomponent.Date{Year: 2011, Month: time.December}, To: resumecomponent.Date{Year: 2013, Month: time.June},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Researched and implemented experimental software development tools."),
-					component.Join("Created Conception, a 1st place winning project of ", component.Link{Text: "LIVE 2013 Programming Contest", Href: template.URL("http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/")}, "."),
+					component.Join("Created Conception, a 1st place winning project of ", resumecomponent.Link{Text: "LIVE 2013 Programming Contest", Href: template.URL("http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/")}, "."),
 				},
 			},
 			{
 				Title:    "Junior Application Programmer",
 				Subtitle: "CYSSC/MCYS, Ontario Public Service",
-				Dates: component.DateRange{
-					From: component.Date{Year: 2007, Month: time.September}, To: component.Date{Year: 2008, Month: time.August},
+				Dates: resumecomponent.DateRange{
+					From: resumecomponent.Date{Year: 2007, Month: time.September}, To: resumecomponent.Date{Year: 2008, Month: time.August},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Designed, created and maintained a complex Java GUI application to aid the development and maintenance of large database applications."),
@@ -77,8 +78,8 @@ func (DmitriShuralyov) Experience() Section {
 			{
 				Title:    "Game Engine Engineer, Tools",
 				Subtitle: "Reverie World Studios",
-				Dates: component.DateRange{
-					From: component.Date{Year: 2007, Month: time.January}, To: component.Date{Year: 2007, Month: time.August},
+				Dates: resumecomponent.DateRange{
+					From: resumecomponent.Date{Year: 2007, Month: time.January}, To: resumecomponent.Date{Year: 2007, Month: time.August},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Coordinated the development of an upgraded world editor in C# to help streamline content production."),
@@ -97,19 +98,19 @@ func (DmitriShuralyov) Projects() Section {
 		Items: []Item{
 			{
 				Title: "Conception",
-				Dates: component.DateRange{
-					From: component.Date{Year: 2012}, To: component.Date{Year: 2014},
+				Dates: resumecomponent.DateRange{
+					From: resumecomponent.Date{Year: 2012}, To: resumecomponent.Date{Year: 2014},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Primary creator of a large open-source systems project; implemented in C++ and Go, solved low-level systems challenges to achieve desired behavior."),
 					component.Text("Routinely implemented and iterated upon experimental and novel interface ideas, interaction techniques and design prototypes, some showed great promise."),
 					component.Text("Discovered new techniques that allow for further reduction of information duplication than existing representations."),
-					component.Join("1st place winning project of ", component.Link{Text: "LIVE 2013 Programming Contest", Href: template.URL("http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/")}, "."),
+					component.Join("1st place winning project of ", resumecomponent.Link{Text: "LIVE 2013 Programming Contest", Href: template.URL("http://liveprogramming.github.io/liveblog/2013/04/live-programming-contest-winners/")}, "."),
 				},
 			},
 			{
 				Title: "Slide: A User-Friendly System for Rapid and Precise Object Placement",
-				Dates: component.Date{Year: 2011},
+				Dates: resumecomponent.Date{Year: 2011},
 				Lines: []htmlg.Component{
 					component.Text("Implemented in C++ with OpenGL, GLSL graphics, employed multiple advanced graphics optimization techniques to get high performance and accurate results in difficult conditions."),
 					component.Text("Had weekly meetings with supervisor to discuss and determine the project direction, iterated based on feedback."),
@@ -117,7 +118,7 @@ func (DmitriShuralyov) Projects() Section {
 			},
 			{
 				Title: "Project eX0",
-				Dates: component.Date{Year: 2007},
+				Dates: resumecomponent.Date{Year: 2007},
 				Lines: []htmlg.Component{
 					component.Text("Implemented in C++ with OpenGL graphics."),
 					component.Text("Developed own high-performance and reliable networking protocol over raw TCP/UDP sockets, which uniquely combined beneficial properties of past networking models."),
@@ -137,11 +138,11 @@ func (ds DmitriShuralyov) Skills() Section {
 				Title: "Languages and APIs",
 				Lines: []htmlg.Component{
 					ds.Reactable("Go", component.Text("Go")),
-					ds.Reactable("C/C++", component.Fade("C/C++")),
-					ds.Reactable("Java", component.Fade("Java")),
-					ds.Reactable("C#", component.Fade("C#")),
+					ds.Reactable("C/C++", resumecomponent.Fade("C/C++")),
+					ds.Reactable("Java", resumecomponent.Fade("Java")),
+					ds.Reactable("C#", resumecomponent.Fade("C#")),
 					ds.Reactable("OpenGL", component.Text("OpenGL")),
-					ds.Reactable("SQL", component.Fade("SQL")),
+					ds.Reactable("SQL", resumecomponent.Fade("SQL")),
 				},
 			},
 			{
@@ -166,8 +167,8 @@ func (DmitriShuralyov) Education() Section {
 		Items: []Item{
 			{
 				Title: "York University",
-				Dates: component.DateRange{
-					From: component.Date{Year: 2009}, To: component.Date{Year: 2011},
+				Dates: resumecomponent.DateRange{
+					From: resumecomponent.Date{Year: 2009}, To: resumecomponent.Date{Year: 2011},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Master's Degree, Computer Science"),
@@ -175,8 +176,8 @@ func (DmitriShuralyov) Education() Section {
 			},
 			{
 				Title: "York University",
-				Dates: component.DateRange{
-					From: component.Date{Year: 2004}, To: component.Date{Year: 2009},
+				Dates: resumecomponent.DateRange{
+					From: resumecomponent.Date{Year: 2004}, To: resumecomponent.Date{Year: 2009},
 				},
 				Lines: []htmlg.Component{
 					component.Text("Bachelor's Degree, Specialized Honors Computer Science"),
@@ -189,7 +190,7 @@ func (DmitriShuralyov) Education() Section {
 // Reactable is a convenience helper that joins reactable content with its ReactionsBar,
 // using id as reactable ID. It populates ReactionsBar's Reactions, CurrentUser fields from ds.
 func (ds DmitriShuralyov) Reactable(id string, content htmlg.Component) htmlg.Component {
-	reactionsBar := component.ReactionsBar{
+	reactionsBar := resumecomponent.ReactionsBar{
 		Reactions:    ds.Reactions,
 		ReactableURL: ReactableURL,
 		CurrentUser:  ds.CurrentUser,
