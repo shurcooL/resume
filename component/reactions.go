@@ -16,6 +16,8 @@ import (
 // ReactionsBar is a component next to anything that can be reacted to, with reactable ID.
 // It displays all reactions for that reactable ID, and a NewReaction component for adding new reactions.
 type ReactionsBar struct {
+	// TODO: Consider factoring this out, make it a dumb compnent.
+	//       I.e., change this to Reactions []reactions.Reaction.
 	Reactions interface {
 		// Get reactions for id at uri. uri is clean '/'-separated URI. E.g., "example.com/page".
 		Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error)
@@ -25,10 +27,10 @@ type ReactionsBar struct {
 	ID           string // ID is the reactable ID.
 }
 
-func (r ReactionsBar) RenderContext(ctx context.Context) []*html.Node {
+func (r ReactionsBar) Render() []*html.Node {
 	// TODO: Make this much nicer.
 	/*
-		<div class="reactable-container" data-reactableID="{{.ReactableID}}">
+		<div class="reactable-container" data-reactableID="{{.ID}}">
 			ReactionsBarInner{Reactions: reactions, CurrentUser: r.CurrentUser, ReactableID: r.ID}
 		</div>
 	*/
@@ -39,7 +41,7 @@ func (r ReactionsBar) RenderContext(ctx context.Context) []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	reactions, err := r.Reactions.Get(ctx, r.ReactableURL, r.ID) // TODO: Parallelize these for better performance.
+	reactions, err := r.Reactions.Get(context.TODO(), r.ReactableURL, r.ID) // TODO: Parallelize these for better performance.
 	if err != nil {
 		log.Println(err)
 		reactions = nil
@@ -48,9 +50,6 @@ func (r ReactionsBar) RenderContext(ctx context.Context) []*html.Node {
 		div.AppendChild(n)
 	}
 	return []*html.Node{div}
-}
-func (r ReactionsBar) Render() []*html.Node {
-	return r.RenderContext(context.TODO())
 }
 
 // ReactionsBarInner is a static component that displays all reactions, and

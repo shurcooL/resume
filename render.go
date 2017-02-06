@@ -14,18 +14,23 @@ import (
 // RenderBodyInnerHTML renders the inner HTML of the <body> element of the page that displays the resume.
 // It's safe for concurrent use.
 func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactions reactions.Service, notifications notifications.Service, authenticatedUser users.User, returnURL string) error {
-	_, err := io.WriteString(w, `<div style="max-width: 800px; margin: 0 auto 100px auto;">`)
+	nc, err := notifications.Count(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(w, `<div style="max-width: 800px; margin: 0 auto 100px auto;">`)
 	if err != nil {
 		return err
 	}
 
 	// Render the header.
 	header := homecomponent.Header{
-		CurrentUser:   authenticatedUser,
-		ReturnURL:     returnURL,
-		Notifications: notifications,
+		CurrentUser:       authenticatedUser,
+		NotificationCount: nc,
+		ReturnURL:         returnURL,
 	}
-	err = htmlg.RenderComponentsContext(ctx, w, header)
+	err = htmlg.RenderComponents(w, header)
 	if err != nil {
 		return err
 	}
