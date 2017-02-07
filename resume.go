@@ -17,7 +17,7 @@ const ReactableURL = "dmitri.shuralyov.com/resume"
 
 // DmitriShuralyov is a person whose resume is on display.
 type DmitriShuralyov struct {
-	Reactions   reactions.Service
+	Reactions   map[string][]reactions.Reaction
 	CurrentUser users.User
 }
 
@@ -190,7 +190,7 @@ func (DmitriShuralyov) Education() Section {
 // using id as reactable ID. It populates ReactionsBar's Reactions, CurrentUser fields from ds.
 func (ds DmitriShuralyov) Reactable(id string, content htmlg.Component) htmlg.Component {
 	reactionsBar := resumecomponent.ReactionsBar{
-		Reactions:    ds.Reactions,
+		Reactions:    ds.Reactions[id],
 		ReactableURL: ReactableURL,
 		CurrentUser:  ds.CurrentUser,
 		ID:           id,

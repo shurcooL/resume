@@ -13,7 +13,7 @@ import (
 
 // RenderBodyInnerHTML renders the inner HTML of the <body> element of the page that displays the resume.
 // It's safe for concurrent use.
-func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactions reactions.Service, notifications notifications.Service, authenticatedUser users.User, returnURL string) error {
+func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactionsService reactions.Service, notifications notifications.Service, authenticatedUser users.User, returnURL string) error {
 	var nc uint64
 	if authenticatedUser.ID != 0 {
 		var err error
@@ -23,7 +23,12 @@ func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactions reactions.S
 		}
 	}
 
-	_, err := io.WriteString(w, `<div style="max-width: 800px; margin: 0 auto 100px auto;">`)
+	reactions, err := reactionsService.List(ctx, ReactableURL)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.WriteString(w, `<div style="max-width: 800px; margin: 0 auto 100px auto;">`)
 	if err != nil {
 		return err
 	}

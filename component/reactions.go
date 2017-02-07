@@ -1,9 +1,7 @@
 package component
 
 import (
-	"context"
 	"fmt"
-	"log"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/octiconssvg"
@@ -16,12 +14,7 @@ import (
 // ReactionsBar is a component next to anything that can be reacted to, with reactable ID.
 // It displays all reactions for that reactable ID, and a NewReaction component for adding new reactions.
 type ReactionsBar struct {
-	// TODO: Consider factoring this out, make it a dumb compnent.
-	//       I.e., change this to Reactions []reactions.Reaction.
-	Reactions interface {
-		// Get reactions for id at uri. uri is clean '/'-separated URI. E.g., "example.com/page".
-		Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error)
-	}
+	Reactions    []reactions.Reaction
 	ReactableURL string
 	CurrentUser  users.User
 	ID           string // ID is the reactable ID.
@@ -41,12 +34,7 @@ func (r ReactionsBar) Render() []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	reactions, err := r.Reactions.Get(context.TODO(), r.ReactableURL, r.ID) // TODO: Parallelize these for better performance.
-	if err != nil {
-		log.Println(err)
-		reactions = nil
-	}
-	for _, n := range (ReactionsBarInner{Reactions: reactions, CurrentUser: r.CurrentUser, ReactableID: r.ID}).Render() {
+	for _, n := range (ReactionsBarInner{Reactions: r.Reactions, CurrentUser: r.CurrentUser, ReactableID: r.ID}).Render() {
 		div.AppendChild(n)
 	}
 	return []*html.Node{div}
