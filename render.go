@@ -45,10 +45,7 @@ func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactionsService reac
 	}
 
 	// Render the resume contents.
-	resume := DmitriShuralyov{
-		Reactions:   reactions,
-		CurrentUser: authenticatedUser,
-	}
+	resume := DmitriShuralyov(reactions, authenticatedUser)
 	err = htmlg.RenderComponents(w, resume)
 	if err != nil {
 		return err

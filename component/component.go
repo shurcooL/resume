@@ -2,10 +2,36 @@
 package component
 
 import (
+	"github.com/shurcooL/component"
 	"github.com/shurcooL/htmlg"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )
+
+// Name is a component for displaying the person's name on top of a resume.
+type Name struct {
+	Name string
+}
+
+func (n Name) Render() []*html.Node {
+	div := htmlg.DivClass("name",
+		htmlg.Text(n.Name),
+	)
+	return []*html.Node{div}
+}
+
+// ContactInfo is a component for displaying the persons's contact information on top of a resume.
+type ContactInfo struct {
+	GitHub htmlg.Component
+	Email  htmlg.Component
+}
+
+func (c ContactInfo) Render() []*html.Node {
+	div := htmlg.DivClass("contactinfo", component.Join(
+		c.GitHub, " · ", c.Email,
+	).Render()...)
+	return []*html.Node{div}
+}
 
 // Section is a section of a resume. For example, "Experience" or "Education".
 type Section struct {
