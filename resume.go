@@ -9,7 +9,6 @@ import (
 	resumecomponent "github.com/shurcooL/resume/component"
 	"github.com/shurcooL/users"
 	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
 )
 
 // ReactableURL is the URL for reactionable items on this resume.
@@ -21,11 +20,11 @@ type DmitriShuralyov struct {
 	CurrentUser users.User
 }
 
-func (DmitriShuralyov) Experience() Section {
-	return Section{
+func (DmitriShuralyov) Experience() htmlg.Component {
+	return resumecomponent.Section{
 		Title: "Experience",
 
-		Items: []Item{
+		Items: []resumecomponent.Item{
 			{
 				Title:    "Senior Software Engineer, Full Stack",
 				Subtitle: "Sourcegraph",
@@ -90,11 +89,11 @@ func (DmitriShuralyov) Experience() Section {
 	}
 }
 
-func (DmitriShuralyov) Projects() Section {
-	return Section{
+func (DmitriShuralyov) Projects() htmlg.Component {
+	return resumecomponent.Section{
 		Title: "Projects",
 
-		Items: []Item{
+		Items: []resumecomponent.Item{
 			{
 				Title: "Conception",
 				Dates: resumecomponent.DateRange{
@@ -128,11 +127,11 @@ func (DmitriShuralyov) Projects() Section {
 	}
 }
 
-func (ds DmitriShuralyov) Skills() Section {
-	return Section{
+func (ds DmitriShuralyov) Skills() htmlg.Component {
+	return resumecomponent.Section{
 		Title: "Skills",
 
-		Items: []Item{
+		Items: []resumecomponent.Item{
 			{
 				Title: "Languages and APIs",
 				Lines: []htmlg.Component{
@@ -159,11 +158,11 @@ func (ds DmitriShuralyov) Skills() Section {
 	}
 }
 
-func (DmitriShuralyov) Education() Section {
-	return Section{
+func (DmitriShuralyov) Education() htmlg.Component {
+	return resumecomponent.Section{
 		Title: "Education",
 
-		Items: []Item{
+		Items: []resumecomponent.Item{
 			{
 				Title: "York University",
 				Dates: resumecomponent.DateRange{
@@ -233,83 +232,4 @@ func (ds DmitriShuralyov) Render() []*html.Node {
 	}
 	ns = append(ns, core)
 	return ns
-}
-
-type Section struct {
-	Title string
-	Items []Item
-}
-
-func (s Section) Render() []*html.Node {
-	// TODO: Make this much nicer.
-	/*
-		<div class="sectionheader">{{.Title}}</div>
-		{{range .Items}}
-			{{if not .WIP}}
-				{{render .}}
-			{{end}}
-		{{end}}
-	*/
-	var ns []*html.Node
-	ns = append(ns, htmlg.DivClass("sectionheader", htmlg.Text(s.Title)))
-	for _, i := range s.Items {
-		if i.WIP {
-			continue
-		}
-		ns = append(ns, i.Render()...)
-	}
-	return ns
-}
-
-type Item struct {
-	Title    string
-	Subtitle string
-	Dates    htmlg.Component
-	Lines    []htmlg.Component
-
-	WIP bool
-}
-
-func (i Item) Render() []*html.Node {
-	// TODO: Make this much nicer.
-	/*
-		<div class="item{{if .WIP}} wip{{end}}">
-			<div class="itemheader">
-				<div class="title">{{.Title}}</div>
-				{{with .Subtitle}}<div class="subtitle">{{.}}</div>{{end}}
-				{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
-			</div>
-			<ul>
-				{{range .Lines}}<li>{{render .}}</li>
-				{{end}}
-			</ul>
-		</div>
-	*/
-	itemClass := "item"
-	if i.WIP {
-		itemClass += " wip"
-	}
-	item := htmlg.DivClass(itemClass)
-
-	itemHeader := htmlg.DivClass("itemheader")
-	itemHeader.AppendChild(htmlg.DivClass("title", htmlg.Text(i.Title)))
-	if i.Subtitle != "" {
-		itemHeader.AppendChild(htmlg.DivClass("subtitle", htmlg.Text(i.Subtitle)))
-	}
-	if i.Dates != nil {
-		itemHeader.AppendChild(htmlg.DivClass("dates", i.Dates.Render()...))
-	}
-	item.AppendChild(itemHeader)
-
-	ul := &html.Node{Type: html.ElementNode, Data: atom.Ul.String()}
-	for _, l := range i.Lines {
-		li := &html.Node{Type: html.ElementNode, Data: atom.Li.String()}
-		for _, n := range l.Render() {
-			li.AppendChild(n)
-		}
-		ul.AppendChild(li)
-	}
-	item.AppendChild(ul)
-
-	return []*html.Node{item}
 }
