@@ -78,6 +78,12 @@ var (
 type mockReactions struct{ reactions.Service }
 
 func (mockReactions) Get(_ context.Context, uri string, id string) ([]reactions.Reaction, error) {
+	if uri != resume.ReactableURL {
+		return nil, os.ErrNotExist
+	}
+	if id != "Go" {
+		return nil, nil
+	}
 	return []reactions.Reaction{{
 		Reaction: "smile",
 		Users:    []users.User{alice, bob},
