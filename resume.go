@@ -20,7 +20,7 @@ type DmitriShuralyov struct {
 	CurrentUser users.User
 }
 
-func (DmitriShuralyov) Experience() htmlg.Component {
+func (DmitriShuralyov) experience() htmlg.Component {
 	return resumecomponent.Section{
 		Title: "Experience",
 
@@ -89,7 +89,7 @@ func (DmitriShuralyov) Experience() htmlg.Component {
 	}
 }
 
-func (DmitriShuralyov) Projects() htmlg.Component {
+func (DmitriShuralyov) projects() htmlg.Component {
 	return resumecomponent.Section{
 		Title: "Projects",
 
@@ -127,7 +127,7 @@ func (DmitriShuralyov) Projects() htmlg.Component {
 	}
 }
 
-func (ds DmitriShuralyov) Skills() htmlg.Component {
+func (ds DmitriShuralyov) skills() htmlg.Component {
 	return resumecomponent.Section{
 		Title: "Skills",
 
@@ -135,30 +135,30 @@ func (ds DmitriShuralyov) Skills() htmlg.Component {
 			{
 				Title: "Languages and APIs",
 				Lines: []htmlg.Component{
-					ds.Reactable("Go", component.Text("Go")),
-					ds.Reactable("C/C++", resumecomponent.Fade("C/C++")),
-					ds.Reactable("Java", resumecomponent.Fade("Java")),
-					ds.Reactable("C#", resumecomponent.Fade("C#")),
-					ds.Reactable("OpenGL", component.Text("OpenGL")),
-					ds.Reactable("SQL", resumecomponent.Fade("SQL")),
+					ds.reactable("Go", component.Text("Go")),
+					ds.reactable("C/C++", resumecomponent.Fade("C/C++")),
+					ds.reactable("Java", resumecomponent.Fade("Java")),
+					ds.reactable("C#", resumecomponent.Fade("C#")),
+					ds.reactable("OpenGL", component.Text("OpenGL")),
+					ds.reactable("SQL", resumecomponent.Fade("SQL")),
 				},
 			},
 			{
 				Title: "Software",
 				Lines: []htmlg.Component{
-					ds.Reactable("Git", component.Text("Git")),
-					ds.Reactable("Xcode", component.Text("Xcode")),
-					ds.Reactable("Visual Studio", component.Text("Visual Studio")),
-					ds.Reactable("OS X", component.Text("OS X")),
-					ds.Reactable("Linux", component.Text("Linux")),
-					ds.Reactable("Windows", component.Text("Windows")),
+					ds.reactable("Git", component.Text("Git")),
+					ds.reactable("Xcode", component.Text("Xcode")),
+					ds.reactable("Visual Studio", component.Text("Visual Studio")),
+					ds.reactable("OS X", component.Text("OS X")),
+					ds.reactable("Linux", component.Text("Linux")),
+					ds.reactable("Windows", component.Text("Windows")),
 				},
 			},
 		},
 	}
 }
 
-func (DmitriShuralyov) Education() htmlg.Component {
+func (DmitriShuralyov) education() htmlg.Component {
 	return resumecomponent.Section{
 		Title: "Education",
 
@@ -185,9 +185,9 @@ func (DmitriShuralyov) Education() htmlg.Component {
 	}
 }
 
-// Reactable is a convenience helper that joins reactable content with its ReactionsBar,
+// reactable is a convenience helper that joins reactable content with its ReactionsBar,
 // using id as reactable ID. It populates ReactionsBar's Reactions, CurrentUser fields from ds.
-func (ds DmitriShuralyov) Reactable(id string, content htmlg.Component) htmlg.Component {
+func (ds DmitriShuralyov) reactable(id string, content htmlg.Component) htmlg.Component {
 	reactionsBar := resumecomponent.ReactionsBar{
 		Reactions:    ds.Reactions[id],
 		ReactableURL: ReactableURL,
@@ -218,16 +218,16 @@ func (ds DmitriShuralyov) Render() []*html.Node {
 	).Render()...)
 	ns = append(ns, contactInfo)
 	core := htmlg.DivClass("core")
-	for _, n := range ds.Experience().Render() {
+	for _, n := range ds.experience().Render() {
 		core.AppendChild(n)
 	}
-	for _, n := range ds.Projects().Render() {
+	for _, n := range ds.projects().Render() {
 		core.AppendChild(n)
 	}
-	for _, n := range ds.Skills().Render() {
+	for _, n := range ds.skills().Render() {
 		core.AppendChild(n)
 	}
-	for _, n := range ds.Education().Render() {
+	for _, n := range ds.education().Render() {
 		core.AppendChild(n)
 	}
 	ns = append(ns, core)

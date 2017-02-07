@@ -1,4 +1,4 @@
-// Package resume is Dmitri Shuralyov's résumé.
+// Package resume contains Dmitri Shuralyov's résumé.
 //
 // The implementation is a little experimental and not to be taken very seriously.
 //
