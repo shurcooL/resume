@@ -162,7 +162,7 @@ func DmitriShuralyov(reactions map[string][]reactions.Reaction, currentUser user
 						reactable("Git", component.Text("Git")),
 						reactable("Xcode", component.Text("Xcode")),
 						reactable("Visual Studio", component.Text("Visual Studio")),
-						reactable("OS X", component.Text("OS X")),
+						reactable("macOS", component.Text("macOS")),
 						reactable("Linux", component.Text("Linux")),
 						reactable("Windows", component.Text("Windows")),
 					},
