@@ -3,6 +3,7 @@ package resume
 import (
 	"context"
 	"io"
+	"log"
 
 	homecomponent "github.com/shurcooL/home/component"
 	"github.com/shurcooL/htmlg"
@@ -19,7 +20,9 @@ func RenderBodyInnerHTML(ctx context.Context, w io.Writer, reactionsService reac
 		var err error
 		nc, err = notifications.Count(ctx, nil)
 		if err != nil {
-			return err
+			// THINK: Should it be a fatal error or not? What about on frontend vs backend?
+			log.Println(err)
+			nc = 0
 		}
 	}
 
