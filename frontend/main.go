@@ -8,15 +8,17 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/shurcooL/frontend/reactionsmenu"
-	"github.com/shurcooL/home/http"
+	homehttp "github.com/shurcooL/home/http"
 	"github.com/shurcooL/notificationsapp/httpclient"
 	"github.com/shurcooL/resume"
 	"github.com/shurcooL/users"
+	"golang.org/x/oauth2"
 	"honnef.co/go/js/dom"
 )
 
@@ -36,8 +38,11 @@ func main() {
 }
 
 func setup() {
-	reactionsService := http.Reactions{}
-	authenticatedUser, err := http.Users{}.GetAuthenticated(context.TODO())
+	httpClient := httpClient()
+
+	reactionsService := homehttp.Reactions{}
+	notificationsService := httpclient.NewNotifications(httpClient, "", "")
+	authenticatedUser, err := homehttp.Users{}.GetAuthenticated(context.TODO())
 	if err != nil {
 		log.Println(err)
 		authenticatedUser = users.User{} // THINK: Should it be a fatal error or not? What about on frontend vs backend?
@@ -48,7 +53,7 @@ func setup() {
 	if !prerender {
 		var buf bytes.Buffer
 		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
-		err = resume.RenderBodyInnerHTML(context.TODO(), &buf, reactionsService, httpclient.Notifications{}, authenticatedUser, returnURL)
+		err = resume.RenderBodyInnerHTML(context.TODO(), &buf, reactionsService, notificationsService, authenticatedUser, returnURL)
 		if err != nil {
 			log.Println(err)
 			return
@@ -57,4 +62,18 @@ func setup() {
 	}
 
 	reactionsmenu.Setup(resume.ReactableURL, reactionsService, authenticatedUser)
+}
+
+// httpClient gives an *http.Client for making API requests.
+func httpClient() *http.Client {
+	document := &http.Request{Header: http.Header{"Cookie": {document.Cookie()}}}
+	if accessToken, err := document.Cookie("accessToken"); err == nil {
+		// Authenticated client.
+		src := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: accessToken.Value},
+		)
+		return oauth2.NewClient(context.Background(), src)
+	}
+	// Not authenticated client.
+	return http.DefaultClient
 }
