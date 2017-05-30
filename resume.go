@@ -21,10 +21,9 @@ func DmitriShuralyov(reactions map[string][]reactions.Reaction, currentUser user
 	// using id as reactable ID. It populates ReactionsBar's Reactions and CurrentUser fields.
 	reactable := func(id string, content htmlg.Component) htmlg.Component {
 		reactionsBar := reactionscomponent.ReactionsBar{
-			Reactions:    reactions[id],
-			ReactableURL: ReactableURL,
-			CurrentUser:  currentUser,
-			ID:           id,
+			Reactions:   reactions[id],
+			CurrentUser: currentUser,
+			ID:          id,
 		}
 		return component.List{content, reactionsBar}
 	}
