@@ -6,6 +6,7 @@ import (
 	"github.com/shurcooL/component"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
+	reactionscomponent "github.com/shurcooL/reactions/component"
 	resumecomponent "github.com/shurcooL/resume/component"
 	"github.com/shurcooL/users"
 )
@@ -19,7 +20,7 @@ func DmitriShuralyov(reactions map[string][]reactions.Reaction, currentUser user
 	// reactable is a convenience helper that joins reactable content with its ReactionsBar,
 	// using id as reactable ID. It populates ReactionsBar's Reactions and CurrentUser fields.
 	reactable := func(id string, content htmlg.Component) htmlg.Component {
-		reactionsBar := resumecomponent.ReactionsBar{
+		reactionsBar := reactionscomponent.ReactionsBar{
 			Reactions:    reactions[id],
 			ReactableURL: ReactableURL,
 			CurrentUser:  currentUser,
