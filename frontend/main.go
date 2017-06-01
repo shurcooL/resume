@@ -66,8 +66,8 @@ func setup() {
 
 // httpClient gives an *http.Client for making API requests.
 func httpClient() *http.Client {
-	document := &http.Request{Header: http.Header{"Cookie": {document.Cookie()}}}
-	if accessToken, err := document.Cookie("accessToken"); err == nil {
+	cookies := &http.Request{Header: http.Header{"Cookie": {document.Cookie()}}}
+	if accessToken, err := cookies.Cookie("accessToken"); err == nil {
 		// Authenticated client.
 		src := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: accessToken.Value},
