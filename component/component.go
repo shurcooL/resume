@@ -101,12 +101,9 @@ func (i Item) Render() []*html.Node {
 	}
 	item.AppendChild(itemHeader)
 
-	ul := &html.Node{Type: html.ElementNode, Data: atom.Ul.String()}
+	ul := htmlg.UL()
 	for _, l := range i.Lines {
-		li := &html.Node{Type: html.ElementNode, Data: atom.Li.String()}
-		for _, n := range l.Render() {
-			li.AppendChild(n)
-		}
+		li := htmlg.LI(l.Render()...)
 		ul.AppendChild(li)
 	}
 	item.AppendChild(ul)
