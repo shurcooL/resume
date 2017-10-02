@@ -23,7 +23,7 @@ var updateFlag = flag.Bool("update", false, "Update golden files.")
 // TestBodyInnerHTML validates that resume.RenderBodyInnerHTML renders the body inner HTML as expected.
 func TestBodyInnerHTML(t *testing.T) {
 	var buf bytes.Buffer
-	err := resume.RenderBodyInnerHTML(context.TODO(), &buf, mockReactions{}, mockNotifications{}, alice, "/")
+	err := resume.RenderBodyInnerHTML(context.TODO(), &buf, shurcool, mockReactions{}, mockNotifications{}, alice, "/")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +63,7 @@ func BenchmarkRenderBodyInnerHTML(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		err := resume.RenderBodyInnerHTML(context.Background(), ioutil.Discard, reactions, notifications, authenticatedUser, returnURL)
+		err := resume.RenderBodyInnerHTML(context.Background(), ioutil.Discard, shurcool, reactions, notifications, authenticatedUser, returnURL)
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -71,6 +71,12 @@ func BenchmarkRenderBodyInnerHTML(b *testing.B) {
 }
 
 var (
+	shurcool = users.User{
+		UserSpec: users.UserSpec{ID: 1924134, Domain: "github.com"},
+		Name:     "Dmitri Shuralyov",
+		Email:    "shurcooL@gmail.com",
+	}
+
 	alice = users.User{UserSpec: users.UserSpec{ID: 1}, Login: "Alice"}
 	bob   = users.User{UserSpec: users.UserSpec{ID: 2}, Login: "Bob"}
 )

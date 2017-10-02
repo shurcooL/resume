@@ -14,9 +14,10 @@ import (
 // ReactableURL is the URL for reactionable items on this resume.
 const ReactableURL = "dmitri.shuralyov.com/resume"
 
-// DmitriShuralyov returns Dmitri Shuralyov's resume.
+// DmitriShuralyov returns Dmitri Shuralyov's resume,
+// using the basic user information of shurcool.
 // It's annotated with the given reactions from the perspective of currentUser.
-func DmitriShuralyov(reactions map[string][]reactions.Reaction, currentUser users.User) htmlg.Component {
+func DmitriShuralyov(shurcool users.User, reactions map[string][]reactions.Reaction, currentUser users.User) htmlg.Component {
 	// reactable is a convenience helper that joins reactable content with its ReactionsBar,
 	// using id as reactable ID. It populates ReactionsBar's Reactions and CurrentUser fields.
 	reactable := func(id string, content htmlg.Component) htmlg.Component {
@@ -30,12 +31,12 @@ func DmitriShuralyov(reactions map[string][]reactions.Reaction, currentUser user
 
 	resume := component.Join(
 		resumecomponent.Name{
-			Name: "Dmitri Shuralyov",
+			Name: shurcool.Name,
 		},
 
 		resumecomponent.ContactInfo{
 			GitHub: component.Link{Text: "github.com/shurcooL", URL: "https://github.com/shurcooL", NewTab: true},
-			Email:  component.Link{Text: "shurcooL@gmail.com", URL: "mailto:shurcooL@gmail.com", NewTab: true},
+			Email:  component.Link{Text: shurcool.Email, URL: "mailto:" + shurcool.Email, NewTab: true},
 		},
 
 		resumecomponent.Section{
