@@ -74,7 +74,7 @@ var (
 	shurcool = users.User{
 		UserSpec: users.UserSpec{ID: 1924134, Domain: "github.com"},
 		Name:     "Dmitri Shuralyov",
-		Email:    "shurcooL@gmail.com",
+		Email:    "dmitri@shuralyov.com",
 	}
 
 	alice = users.User{UserSpec: users.UserSpec{ID: 1}, Login: "Alice"}
