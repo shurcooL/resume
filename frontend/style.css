@@ -10,6 +10,9 @@ body {
 	.item {
 		page-break-inside: avoid;
 	}
+	header.header {
+		display: none;
+	}
 }
 a:link, a:visited {
 	color: #006da3;
@@ -85,6 +88,11 @@ li {
 div.reactable-container {
 	display: inline-block;
 	vertical-align: top;
+}
+@media print {
+	div.reactable-container {
+		display: none;
+	}
 }
 li:hover div.new-reaction {
 	display: inline-block;
