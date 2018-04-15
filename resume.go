@@ -11,9 +11,6 @@ import (
 	"github.com/shurcooL/users"
 )
 
-// ReactableURL is the URL for reactionable items on this resume.
-const ReactableURL = "dmitri.shuralyov.com/resume"
-
 // DmitriShuralyov returns Dmitri Shuralyov's resume,
 // using the basic user information of shurcool.
 // It's annotated with the given reactions from the perspective of currentUser.

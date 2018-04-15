@@ -67,6 +67,8 @@ type Item struct {
 	Dates    htmlg.Component
 	Lines    []htmlg.Component
 
+	// WIP controls whether the item is considered a work-in-progress,
+	// and is therefore omitted during production use.
 	WIP bool
 }
 

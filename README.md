@@ -22,7 +22,6 @@ Directories
 | Path                                                                | Synopsis                                                                             |
 |---------------------------------------------------------------------|--------------------------------------------------------------------------------------|
 | [component](https://godoc.org/github.com/shurcooL/resume/component) | Package component contains individual components that can render themselves as HTML. |
-| [frontend](https://godoc.org/github.com/shurcooL/resume/frontend)   | frontend renders the resume entirely on the frontend.                                |
 
 License
 -------
