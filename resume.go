@@ -46,7 +46,7 @@ func DmitriShuralyov(shurcool users.User, reactions map[string][]reactions.React
 						From: resumecomponent.Date{Year: 2016, Month: time.November}, To: resumecomponent.Date{Year: 2017, Month: time.December},
 					},
 					Lines: []htmlg.Component{
-						component.Join("Designed and created the first ", component.Link{Text: "GraphQL client library", URL: "https://github.com/shurcooL/githubql", NewTab: true}, " for Go."),
+						component.Join("Designed and created the first ", component.Link{Text: "GraphQL client library", URL: "https://github.com/shurcooL/githubv4", NewTab: true}, " for Go."),
 						component.Text("Contributed code, performed code review and triaged issues for many popular packages to help sustain and expand the Go ecosystem."),
 						component.Text("Maintained the GopherJS compiler and implemented support for new releases of Go."),
 						component.Text("Implemented components that enable decentralized self-hosting of Go packages, including an issue tracker, git server, code viewer and code review tool."),
