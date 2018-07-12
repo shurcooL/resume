@@ -32,7 +32,7 @@ func DmitriShuralyov(shurcool users.User, reactions map[string][]reactions.React
 		},
 
 		resumecomponent.ContactInfo{
-			GitHub: component.Link{Text: "github.com/shurcooL", URL: "https://github.com/shurcooL", NewTab: true},
+			GitHub: component.Link{Text: "github.com/dmitshur", URL: "https://github.com/dmitshur", NewTab: true},
 			Email:  component.Link{Text: shurcool.Email, URL: "mailto:" + shurcool.Email, NewTab: true},
 		},
 
