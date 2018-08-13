@@ -41,9 +41,19 @@ func DmitriShuralyov(shurcool users.User, reactions map[string][]reactions.React
 
 			Items: []resumecomponent.Item{
 				{
+					Title:    "Software Engineer",
+					Subtitle: "Google",
+					Dates: resumecomponent.DateRange{
+						From: resumecomponent.Date{Year: 2018, Month: time.July}, To: resumecomponent.Present{},
+					},
+					Lines: []htmlg.Component{
+						component.Join("Joined the Go Open Source Project team."),
+					},
+				},
+				{
 					Title: "Full-time Open Source Contributor",
 					Dates: resumecomponent.DateRange{
-						From: resumecomponent.Date{Year: 2016, Month: time.November}, To: resumecomponent.Date{Year: 2017, Month: time.December},
+						From: resumecomponent.Date{Year: 2016, Month: time.November}, To: resumecomponent.Date{Year: 2018, Month: time.March},
 					},
 					Lines: []htmlg.Component{
 						component.Join("Designed and created the first ", component.Link{Text: "GraphQL client library", URL: "https://github.com/shurcooL/githubv4", NewTab: true}, " for Go."),
