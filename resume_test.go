@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
@@ -24,6 +25,8 @@ func TestDmitriShuralyov(t *testing.T) {
 			Email:    "dmitri@shuralyov.com",
 		}
 
+		mockTime = time.Date(2018, time.August, 26, 9, 41, 0, 0, time.UTC)
+
 		alice = users.User{UserSpec: users.UserSpec{ID: 1, Domain: "example.org"}, Login: "Alice"}
 		bob   = users.User{UserSpec: users.UserSpec{ID: 2, Domain: "example.org"}, Login: "Bob"}
 
@@ -39,7 +42,7 @@ func TestDmitriShuralyov(t *testing.T) {
 	)
 
 	var buf bytes.Buffer
-	err := htmlg.RenderComponents(&buf, resume.DmitriShuralyov(shurcool, mockReactions, alice))
+	err := htmlg.RenderComponents(&buf, resume.DmitriShuralyov(shurcool, mockTime, mockReactions, alice))
 	if err != nil {
 		t.Fatal(err)
 	}

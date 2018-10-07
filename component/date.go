@@ -28,10 +28,14 @@ func (d Date) Render() []*html.Node {
 }
 
 // Present represents the present date.
-type Present struct{}
+type Present struct {
+	// Now should be set to the current local time.
+	// Tests may use a fixed time to get reproducible output.
+	Now time.Time
+}
 
-func (Present) Date() (year int, month time.Month) {
-	year, month, _ = time.Now().UTC().Date()
+func (p Present) Date() (year int, month time.Month) {
+	year, month, _ = p.Now.UTC().Date()
 	return year, month
 }
 
