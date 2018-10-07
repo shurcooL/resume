@@ -19,7 +19,7 @@ var updateFlag = flag.Bool("update", false, "Update golden files.")
 // TestDmitriShuralyov validates that rendering resume.DmitriShuralyov produces expected HTML.
 func TestDmitriShuralyov(t *testing.T) {
 	var (
-		shurcool = users.User{
+		dmitshur = users.User{
 			UserSpec: users.UserSpec{ID: 1924134, Domain: "github.com"},
 			Name:     "Dmitri Shuralyov",
 			Email:    "dmitri@shuralyov.com",
@@ -42,7 +42,7 @@ func TestDmitriShuralyov(t *testing.T) {
 	)
 
 	var buf bytes.Buffer
-	err := htmlg.RenderComponents(&buf, resume.DmitriShuralyov(shurcool, mockTime, mockReactions, alice))
+	err := htmlg.RenderComponents(&buf, resume.DmitriShuralyov(dmitshur, mockTime, mockReactions, alice))
 	if err != nil {
 		t.Fatal(err)
 	}

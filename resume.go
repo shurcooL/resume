@@ -12,10 +12,10 @@ import (
 )
 
 // DmitriShuralyov returns Dmitri Shuralyov's resume,
-// using the basic user information of shurcool,
+// using the basic user information of dmitshur,
 // and the current local time now.
 // It's annotated with the given reactions from the perspective of currentUser.
-func DmitriShuralyov(shurcool users.User, now time.Time, reactions map[string][]reactions.Reaction, currentUser users.User) htmlg.Component {
+func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]reactions.Reaction, currentUser users.User) htmlg.Component {
 	// reactable is a convenience helper that joins reactable content with its ReactionsBar,
 	// using id as reactable ID. It populates ReactionsBar's Reactions and CurrentUser fields.
 	reactable := func(id string, content htmlg.Component) htmlg.Component {
@@ -29,12 +29,12 @@ func DmitriShuralyov(shurcool users.User, now time.Time, reactions map[string][]
 
 	resume := component.Join(
 		resumecomponent.Name{
-			Name: shurcool.Name,
+			Name: dmitshur.Name,
 		},
 
 		resumecomponent.ContactInfo{
 			GitHub: component.Link{Text: "github.com/dmitshur", URL: "https://github.com/dmitshur", NewTab: true},
-			Email:  component.Link{Text: shurcool.Email, URL: "mailto:" + shurcool.Email, NewTab: true},
+			Email:  component.Link{Text: dmitshur.Email, URL: "mailto:" + dmitshur.Email, NewTab: true},
 		},
 
 		resumecomponent.Section{
