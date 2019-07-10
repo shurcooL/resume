@@ -33,6 +33,19 @@ func (c ContactInfo) Render() []*html.Node {
 	return []*html.Node{div}
 }
 
+// Organization is a component for displaying an entity with a name and a location.
+type Organization struct {
+	Name     string
+	Location string
+}
+
+func (o Organization) Render() []*html.Node {
+	return []*html.Node{
+		htmlg.Div(htmlg.Text(o.Name)),
+		htmlg.DivClass("location", htmlg.Text(o.Location)),
+	}
+}
+
 // Section is a section of a resume. For example, "Experience" or "Education".
 type Section struct {
 	Title string
@@ -62,9 +75,9 @@ func (s Section) Render() []*html.Node {
 
 // Item is a single item within a resume section. For example, a particular workplace or school.
 type Item struct {
-	Title    string
-	Subtitle string
-	Dates    htmlg.Component
+	Title    htmlg.Component
+	Subtitle htmlg.Component // Optional.
+	Dates    htmlg.Component // Optional.
 	Lines    []htmlg.Component
 
 	// WIP controls whether the item is considered a work-in-progress,
@@ -77,8 +90,8 @@ func (i Item) Render() []*html.Node {
 	/*
 		<div class="item{{if .WIP}} wip{{end}}">
 			<div class="itemheader">
-				<div class="title">{{.Title}}</div>
-				{{with .Subtitle}}<div class="subtitle">{{.}}</div>{{end}}
+				<div class="title">{{render .Title}}</div>
+				{{with .Subtitle}}<div class="subtitle">{{render .}}</div>{{end}}
 				{{with .Dates}}<div class="dates">{{render .}}</div>{{end}}
 			</div>
 			<ul>
@@ -94,9 +107,9 @@ func (i Item) Render() []*html.Node {
 	item := htmlg.DivClass(itemClass)
 
 	itemHeader := htmlg.DivClass("itemheader")
-	itemHeader.AppendChild(htmlg.DivClass("title", htmlg.Text(i.Title)))
-	if i.Subtitle != "" {
-		itemHeader.AppendChild(htmlg.DivClass("subtitle", htmlg.Text(i.Subtitle)))
+	itemHeader.AppendChild(htmlg.DivClass("title", i.Title.Render()...))
+	if i.Subtitle != nil {
+		itemHeader.AppendChild(htmlg.DivClass("subtitle", i.Subtitle.Render()...))
 	}
 	if i.Dates != nil {
 		itemHeader.AppendChild(htmlg.DivClass("dates", i.Dates.Render()...))

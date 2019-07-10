@@ -42,8 +42,8 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 
 			Items: []resumecomponent.Item{
 				{
-					Title:    "Software Engineer",
-					Subtitle: "Google",
+					Title:    component.Text("Software Engineer"),
+					Subtitle: resumecomponent.Organization{Name: "Google", Location: "New York, NY"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2018, Month: time.July}, To: resumecomponent.Present{Now: now},
 					},
@@ -52,7 +52,8 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title: "Full-time Open Source Contributor",
+					Title:    component.Text("Full-time Open Source Contributor"),
+					Subtitle: resumecomponent.Organization{Name: "-", Location: "Toronto, ON"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2016, Month: time.November}, To: resumecomponent.Date{Year: 2018, Month: time.March},
 					},
@@ -64,8 +65,8 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title:    "Senior Software Engineer, Full Stack",
-					Subtitle: "Sourcegraph",
+					Title:    component.Text("Senior Software Engineer, Full Stack"),
+					Subtitle: resumecomponent.Organization{Name: "Sourcegraph", Location: "San Francisco, CA"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2015, Month: time.April}, To: resumecomponent.Date{Year: 2016, Month: time.November},
 					},
@@ -77,8 +78,8 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title:    "Senior Software Engineer, Backend",
-					Subtitle: "Triggit",
+					Title:    component.Text("Senior Software Engineer, Backend"),
+					Subtitle: resumecomponent.Organization{Name: "Triggit", Location: "San Francisco, CA"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2013, Month: time.June}, To: resumecomponent.Date{Year: 2015, Month: time.March},
 					},
@@ -90,7 +91,8 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title: "Toolmaker",
+					Title:    component.Text("Toolmaker"),
+					Subtitle: resumecomponent.Organization{Name: "-", Location: "Toronto, ON"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2011, Month: time.December}, To: resumecomponent.Date{Year: 2013, Month: time.June},
 					},
@@ -100,8 +102,8 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title:    "Junior Application Programmer",
-					Subtitle: "CYSSC/MCYS, Ontario Public Service",
+					Title:    component.Text("Junior Application Programmer"),
+					Subtitle: resumecomponent.Organization{Name: "CYSSC/MCYS, Ontario Public Service", Location: "Toronto, ON"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2007, Month: time.September}, To: resumecomponent.Date{Year: 2008, Month: time.August},
 					},
@@ -112,8 +114,8 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title:    "Game Engine Engineer, Tools",
-					Subtitle: "Reverie World Studios",
+					Title:    component.Text("Game Engine Engineer, Tools"),
+					Subtitle: resumecomponent.Organization{Name: "Reverie World Studios", Location: "Toronto, ON"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2007, Month: time.January}, To: resumecomponent.Date{Year: 2007, Month: time.August},
 					},
@@ -131,7 +133,7 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 
 			Items: []resumecomponent.Item{
 				{
-					Title: "Conception",
+					Title: component.Text("Conception"),
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2012}, To: resumecomponent.Date{Year: 2014},
 					},
@@ -143,7 +145,7 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title: "Slide: A User-Friendly System for Rapid and Precise Object Placement",
+					Title: component.Text("Slide: A User-Friendly System for Rapid and Precise Object Placement"),
 					Dates: resumecomponent.Date{Year: 2011},
 					Lines: []htmlg.Component{
 						component.Text("Implemented in C++ with OpenGL, GLSL graphics, employed multiple advanced graphics optimization techniques to get high performance and accurate results in difficult conditions."),
@@ -151,7 +153,7 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title: "Project eX0",
+					Title: component.Text("Project eX0"),
 					Dates: resumecomponent.Date{Year: 2007},
 					Lines: []htmlg.Component{
 						component.Text("Implemented in C++ with OpenGL graphics."),
@@ -167,7 +169,7 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 
 			Items: []resumecomponent.Item{
 				{
-					Title: "Languages and APIs",
+					Title: component.Text("Languages and APIs"),
 					Lines: []htmlg.Component{
 						reactable("Go", component.Text("Go")),
 						reactable("C/C++", resumecomponent.Fade("C/C++")),
@@ -178,7 +180,7 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title: "Software",
+					Title: component.Text("Software"),
 					Lines: []htmlg.Component{
 						reactable("Git", component.Text("Git")),
 						reactable("Xcode", component.Text("Xcode")),
@@ -196,7 +198,7 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 
 			Items: []resumecomponent.Item{
 				{
-					Title: "York University",
+					Title: resumecomponent.Organization{Name: "York University", Location: "Toronto, ON"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2009}, To: resumecomponent.Date{Year: 2011},
 					},
@@ -205,7 +207,7 @@ func DmitriShuralyov(dmitshur users.User, now time.Time, reactions map[string][]
 					},
 				},
 				{
-					Title: "York University",
+					Title: resumecomponent.Organization{Name: "York University", Location: "Toronto, ON"},
 					Dates: resumecomponent.DateRange{
 						From: resumecomponent.Date{Year: 2004}, To: resumecomponent.Date{Year: 2009},
 					},
