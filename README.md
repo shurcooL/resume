@@ -1,7 +1,7 @@
 resume
 ======
 
-[![Build Status](https://travis-ci.org/shurcooL/resume.svg?branch=master)](https://travis-ci.org/shurcooL/resume) [![GoDoc](https://godoc.org/github.com/shurcooL/resume?status.svg)](https://godoc.org/github.com/shurcooL/resume)
+[![Go Reference](https://pkg.go.dev/badge/github.com/shurcooL/resume.svg)](https://pkg.go.dev/github.com/shurcooL/resume)
 
 Package resume contains Dmitri Shuralyov's résumé.
 
@@ -12,18 +12,18 @@ Credit goes to Pavel Bennett for original frontend design.
 Installation
 ------------
 
-```bash
-go get -u github.com/shurcooL/resume
+```sh
+go get github.com/shurcooL/resume
 ```
 
 Directories
 -----------
 
-| Path                                                                | Synopsis                                                                             |
-|---------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| [component](https://godoc.org/github.com/shurcooL/resume/component) | Package component contains individual components that can render themselves as HTML. |
+| Path                                                                 | Synopsis                                                                             |
+|----------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| [component](https://pkg.go.dev/github.com/shurcooL/resume/component) | Package component contains individual components that can render themselves as HTML. |
 
 License
 -------
 
--	[MIT License](https://opensource.org/licenses/mit-license.php)
+-	[MIT License](LICENSE)
